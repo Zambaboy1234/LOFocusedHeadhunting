@@ -8,21 +8,82 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 
 body{
-background:#0f0f0f;
-color:#ddd;
+background:#000;
+overflow:hidden;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
 font-family:SUIT, Pretendard, sans-serif;
+}
+
+/* 모바일 대응용 외곽 */
+.viewport{
+width:100vw;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+position:relative;
 overflow:hidden;
 }
 
-/* 전체 레이아웃 */
+/* 위아래 자연스러운 그라데이션 */
+.viewport::before,
+.viewport::after{
+content:"";
+position:absolute;
+left:0;
+width:100%;
+height:120px;
+pointer-events:none;
+z-index:2;
+}
+
+.viewport::before{
+top:0;
+background:linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+}
+
+.viewport::after{
+bottom:0;
+background:linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+}
+
+/* 16:9 고정 비율 */
+.gameWrapper{
+width:1920px;
+height:1080px;
+background:#0f0f0f;
+transform-origin:center center;
+position:relative;
+overflow:hidden;
+}
+
+/* 모바일 자동 축소 */
+@media (max-aspect-ratio: 16/9){
+.gameWrapper{
+transform: scale(calc(100vw / 1920));
+}
+}
+
+@media (min-aspect-ratio: 16/9){
+.gameWrapper{
+transform: scale(calc(100vh / 1080));
+}
+}
+
+/* ===== 기존 레이아웃 ===== */
+
 .main{
 display:grid;
 grid-template-columns:220px 1fr 260px;
 grid-template-rows:1fr 120px;
-height:100vh;
+height:100%;
+color:#ddd;
 }
 
-/* 좌측 배너 선택 */
+/* 좌측 */
 .leftPanel{
 padding:30px 20px;
 display:flex;
@@ -34,7 +95,6 @@ gap:20px;
 background:#111;
 border:2px solid #333;
 padding:18px;
-text-align:left;
 font-size:20px;
 cursor:pointer;
 }
@@ -43,11 +103,10 @@ cursor:pointer;
 border:2px solid #fff;
 }
 
-/* 중앙 배너 영역 */
+/* 중앙 */
 .centerPanel{
 position:relative;
 background:#151515;
-overflow:hidden;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -58,7 +117,7 @@ font-size:48px;
 opacity:0.2;
 }
 
-/* 좌하단 작은 캐릭터 영역 */
+/* 좌하 */
 .subInfo{
 position:absolute;
 bottom:30px;
@@ -90,7 +149,7 @@ border:1px solid #333;
 font-size:14px;
 }
 
-/* 우측 가챠 버튼 */
+/* 우측 */
 .rightPanel{
 padding:40px 20px;
 display:flex;
@@ -117,12 +176,12 @@ transform:skewX(10deg);
 /* 하단 네비 */
 .bottomNav{
 grid-column:1 / span 3;
-background:#0f0f0f;
 display:flex;
 justify-content:center;
 align-items:center;
 gap:60px;
 border-top:1px solid #222;
+background:#0f0f0f;
 }
 
 .navDiamond{
@@ -145,47 +204,53 @@ font-size:18px;
 
 <body>
 
-<div class="main">
+<div class="viewport">
+  <div class="gameWrapper">
 
-<!-- 좌측 -->
-<div class="leftPanel">
-<div class="bannerBtn active">픽업 1</div>
-<div class="bannerBtn">픽업 2</div>
-<div class="bannerBtn">통상</div>
-</div>
+    <div class="main">
 
-<!-- 중앙 -->
-<div class="centerPanel">
-<div class="mainArt">MAIN CHARACTER ART</div>
+      <!-- 좌측 -->
+      <div class="leftPanel">
+        <div class="bannerBtn active">픽업 1</div>
+        <div class="bannerBtn">픽업 2</div>
+        <div class="bannerBtn">통상</div>
+      </div>
 
-<div class="subInfo">
-<div class="smallDiamond">
-<span>소형 캐릭터</span>
-</div>
-<div class="glowBar">
-잔광 보정 200 / 200
-</div>
-</div>
-</div>
+      <!-- 중앙 -->
+      <div class="centerPanel">
+        <div class="mainArt">MAIN CHARACTER ART</div>
 
-<!-- 우측 -->
-<div class="rightPanel">
-<div class="gachaBtn">
-<span>1회 ◇130</span>
-</div>
-<div class="gachaBtn">
-<span>10회 ◇1300</span>
-</div>
-</div>
+        <div class="subInfo">
+          <div class="smallDiamond">
+            <span>소형 캐릭터</span>
+          </div>
+          <div class="glowBar">
+            잔광 보정 200 / 200
+          </div>
+        </div>
+      </div>
 
-<!-- 하단 네비 -->
-<div class="bottomNav">
-<div class="navDiamond"><span>👤</span></div>
-<div class="navDiamond"><span>📜</span></div>
-<div class="navDiamond"><span>⚙</span></div>
-<div class="navDiamond"><span>≡</span></div>
-</div>
+      <!-- 우측 -->
+      <div class="rightPanel">
+        <div class="gachaBtn">
+          <span>1회 ◇130</span>
+        </div>
+        <div class="gachaBtn">
+          <span>10회 ◇1300</span>
+        </div>
+      </div>
 
+      <!-- 하단 네비 -->
+      <div class="bottomNav">
+        <div class="navDiamond"><span>👤</span></div>
+        <div class="navDiamond"><span>📜</span></div>
+        <div class="navDiamond"><span>⚙</span></div>
+        <div class="navDiamond"><span>≡</span></div>
+      </div>
+
+    </div>
+
+  </div>
 </div>
 
 </body>
