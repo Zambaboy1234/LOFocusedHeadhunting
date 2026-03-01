@@ -7,8 +7,14 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#0f0f0f;overflow:hidden;font-family:Pretendard,sans-serif;color:white;}
+body{
+background:#0f0f0f;
+overflow:hidden;
+font-family:Pretendard,sans-serif;
+color:white;
+}
 
+/* 화면 중앙 정렬 */
 .screen{
 width:100vw;
 height:100vh;
@@ -17,6 +23,7 @@ align-items:center;
 justify-content:center;
 }
 
+/* 16:9 고정 */
 .canvas{
 position:relative;
 width:100%;
@@ -54,7 +61,7 @@ rgba(0,0,0,0) 100%
 );
 }
 
-/* ===== UI는 영상 위 ===== */
+/* UI 레이어 */
 .uiLayer{
 position:absolute;
 top:0;
@@ -83,7 +90,7 @@ font-size:1.3vw;
 transform:skewX(12deg);
 }
 
-/* 가챠 */
+/* 가챠 버튼 */
 .gacha{
 position:absolute;
 right:5%;
@@ -171,7 +178,6 @@ z-index:9999;
 <!-- 🎥 배경 영상 -->
 <video id="bgVideo"
 class="bgVideo"
-autoplay
 muted
 loop
 playsinline
@@ -222,9 +228,18 @@ window.addEventListener("load",function(){
 checkOrientation();
 
 const video = document.getElementById("bgVideo");
+
+/* 첫 터치 재생 방식 */
+function startVideo(){
 if(video){
 video.play().catch(()=>{});
 }
+document.removeEventListener("touchstart", startVideo);
+document.removeEventListener("click", startVideo);
+}
+
+document.addEventListener("touchstart", startVideo);
+document.addEventListener("click", startVideo);
 });
 </script>
 
