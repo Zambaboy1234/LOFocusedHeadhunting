@@ -209,8 +209,17 @@ document.getElementById("rotateBlock").style.display="flex";
 document.getElementById("rotateBlock").style.display="none";
 }
 }
+
 window.addEventListener("resize",checkOrientation);
-window.addEventListener("load",checkOrientation);
+
+window.addEventListener("load",function(){
+checkOrientation();
+
+const video = document.getElementById("bgVideo");
+if(video){
+video.play().catch(()=>{});
+}
+});
 </script>
 
 </body>
