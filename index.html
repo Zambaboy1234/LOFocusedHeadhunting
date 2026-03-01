@@ -7,18 +7,9 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-background:#EEEEE;
-overflow:hidden;
-font-family:Pretendard, sans-serif;
-color:white;
-}
-
-/* ================= 화면 래퍼 ================= */
+body{background:#0f0f0f;overflow:hidden;font-family:Pretendard,sans-serif;color:white;}
 
 .screen{
-position:relative;
 width:100vw;
 height:100vh;
 display:flex;
@@ -31,93 +22,93 @@ position:relative;
 width:100%;
 max-width:1600px;
 aspect-ratio:16/9;
-background:url("bg.jpg") center/cover no-repeat;
 overflow:hidden;
 }
 
-/* ================= 왼쪽 블랙 그라데이션 ================= */
+/* 🎥 배경 영상 */
+.bgVideo{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+object-fit:cover;
+z-index:0;
+}
 
+/* 왼쪽 어둡게 */
 .leftShade{
 position:absolute;
 top:0;
 left:0;
 height:100%;
-width:42%;
+width:38%;
 pointer-events:none;
+z-index:1;
 background:linear-gradient(
 to right,
-rgba(0,0,0,0.8) 0%,
-rgba(0,0,0,0.6) 35%,
-rgba(0,0,0,0.3) 60%,
+rgba(0,0,0,0.85) 0%,
+rgba(0,0,0,0.6) 40%,
+rgba(0,0,0,0.3) 65%,
 rgba(0,0,0,0) 100%
 );
 }
 
-/* ================= 픽업 버튼 ================= */
-
-.pickupGroup{
+/* ===== UI는 영상 위 ===== */
+.uiLayer{
 position:absolute;
-left:4%;
-top:18%;
-display:flex;
-flex-direction:column;
-gap:6%;
-width:18%;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:2;
 }
 
-.pickupBtn{
+/* 픽업 */
+.pickup{
+position:absolute;
+left:3%;
+width:22%;
+transform:skewX(-12deg);
+}
+.pick1{ top:12%; }
+.pick2{ top:28%; }
+.pick3{ top:42%; }
+
+.pickup div{
 background:#111;
 border:2px solid #333;
 padding:6% 8%;
-font-size:1.2vw;
-}
-
-.pickupBtn.active{
-border:2px solid white;
-}
-
-/* ================= 가챠 버튼 ================= */
-
-.gachaGroup{
-position:absolute;
-right:6%;
-top:38%;
-display:flex;
-flex-direction:column;
-gap:8%;
-width:20%;
-}
-
-.gachaBtn{
-background:#111;
-border:2px solid #333;
-padding:8% 6%;
-transform:skewX(-12deg);
-text-align:center;
-font-size:1.4vw;
-}
-
-.gachaBtn span{
-display:block;
+font-size:1.3vw;
 transform:skewX(12deg);
 }
 
-/* ================= 좌하단 정보 ================= */
-
-.subInfo{
+/* 가챠 */
+.gacha{
 position:absolute;
-left:18%;
-bottom:20%;
-display:flex;
-align-items:center;
-gap:3%;
+right:5%;
+width:22%;
+transform:skewX(-12deg);
+}
+.gacha7{ top:36%; }
+.gacha8{ top:50%; }
+
+.gacha div{
+background:#111;
+border:2px solid #333;
+padding:8% 6%;
+text-align:center;
+font-size:1.5vw;
+transform:skewX(12deg);
 }
 
-.smallDiamond{
-width:7vw;
-height:7vw;
-max-width:120px;
-max-height:120px;
+/* 큰 마름모 */
+.bigDiamond{
+position:absolute;
+left:17%;
+bottom:22%;
+width:10%;
+aspect-ratio:1/1;
 background:#111;
 transform:rotate(45deg);
 display:flex;
@@ -125,32 +116,23 @@ align-items:center;
 justify-content:center;
 }
 
-.smallDiamond span{
+.bigDiamond span{
 transform:rotate(-45deg);
-font-size:0.9vw;
+font-size:1vw;
 }
 
-.glowBar{
-background:#111;
-padding:0.8vw 1.5vw;
-border:1px solid #333;
-font-size:0.9vw;
-}
-
-/* ================= 하단 네비 ================= */
-
+/* 하단 네비 */
 .bottomNav{
 position:absolute;
-bottom:5%;
-left:50%;
-transform:translateX(-50%);
+right:6%;
+bottom:6%;
 display:flex;
-gap:4vw;
+gap:2.5vw;
 }
 
-.navDiamond{
-width:4.5vw;
-height:4.5vw;
+.bottomNav div{
+width:4vw;
+aspect-ratio:1/1;
 background:#111;
 transform:rotate(45deg);
 display:flex;
@@ -158,13 +140,12 @@ align-items:center;
 justify-content:center;
 }
 
-.navDiamond span{
+.bottomNav span{
 transform:rotate(-45deg);
 font-size:1.3vw;
 }
 
-/* ================= 세로 차단 ================= */
-
+/* 세로 차단 */
 .rotateWarning{
 position:fixed;
 top:0;
@@ -187,41 +168,37 @@ z-index:9999;
 <div class="screen">
 <div class="canvas">
 
+<!-- 🎥 배경 영상 -->
+<video class="bgVideo" autoplay muted loop playsinline>
+<source src="bg.mp4" type="video/mp4">
+</video>
+
 <div class="leftShade"></div>
 
-<!-- 픽업 -->
-<div class="pickupGroup">
-<div class="pickupBtn active">픽업 1</div>
-<div class="pickupBtn">픽업 2</div>
-<div class="pickupBtn">통상</div>
-</div>
+<div class="uiLayer">
 
-<!-- 가챠 -->
-<div class="gachaGroup">
-<div class="gachaBtn"><span>1회 ◇130</span></div>
-<div class="gachaBtn"><span>10회 ◇1300</span></div>
-</div>
+<div class="pickup pick1"><div>픽업 1</div></div>
+<div class="pickup pick2"><div>픽업 2</div></div>
+<div class="pickup pick3"><div>통상</div></div>
 
-<!-- 좌하단 -->
-<div class="subInfo">
-<div class="smallDiamond"><span>소형 캐릭터</span></div>
-<div class="glowBar">잔광 보정 200 / 200</div>
-</div>
+<div class="gacha gacha7"><div>1회 ◇130</div></div>
+<div class="gacha gacha8"><div>10회 ◇1300</div></div>
 
-<!-- 하단 네비 -->
+<div class="bigDiamond"><span>소형 캐릭터</span></div>
+
 <div class="bottomNav">
-<div class="navDiamond"><span>👤</span></div>
-<div class="navDiamond"><span>📜</span></div>
-<div class="navDiamond"><span>⚙</span></div>
-<div class="navDiamond"><span>≡</span></div>
+<div><span>👤</span></div>
+<div><span>📜</span></div>
+<div><span>⚙</span></div>
+<div><span>≡</span></div>
 </div>
 
+</div>
 </div>
 </div>
 
 <div id="rotateBlock" class="rotateWarning">
-📱<br><br>
-가로 모드에서 이용해주세요.
+📱<br><br>가로 모드에서 이용해주세요.
 </div>
 
 <script>
