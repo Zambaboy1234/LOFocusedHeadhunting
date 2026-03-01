@@ -2,83 +2,122 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>집중 헤드헌팅</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
 background:#0f0f0f;
-color:#ddd;
-font-family:SUIT, Pretendard, sans-serif;
+overflow:hidden;
+font-family:Pretendard, sans-serif;
+color:white;
+}
+
+/* ================= 화면 래퍼 ================= */
+
+.screen{
+position:relative;
+width:100vw;
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.canvas{
+position:relative;
+width:100%;
+max-width:1600px;
+aspect-ratio:16/9;
+background:url("bg.jpg") center/cover no-repeat;
 overflow:hidden;
 }
 
-/* =======================
-   전체 레이아웃
-======================= */
-.main{
-display:grid;
-grid-template-columns: 18% 1fr 22%;
-grid-template-rows: 1fr 90px;
-height:100dvh; /* 모바일 정확 높이 */
+/* ================= 왼쪽 블랙 그라데이션 ================= */
+
+.leftShade{
+position:absolute;
+top:0;
+left:0;
+height:100%;
+width:42%;
+pointer-events:none;
+background:linear-gradient(
+to right,
+rgba(0,0,0,0.8) 0%,
+rgba(0,0,0,0.6) 35%,
+rgba(0,0,0,0.3) 60%,
+rgba(0,0,0,0) 100%
+);
 }
 
-/* =======================
-   좌측 배너 선택
-======================= */
-.leftPanel{
-padding:3vh 2vw;
+/* ================= 픽업 버튼 ================= */
+
+.pickupGroup{
+position:absolute;
+left:4%;
+top:18%;
 display:flex;
 flex-direction:column;
-gap:2vh;
-justify-content:center;
+gap:6%;
+width:18%;
 }
 
-.bannerBtn{
+.pickupBtn{
 background:#111;
 border:2px solid #333;
-padding:2vh;
-font-size:clamp(14px, 1.8vw, 20px);
-cursor:pointer;
+padding:6% 8%;
+font-size:1.2vw;
 }
 
-.bannerBtn.active{
-border:2px solid #fff;
+.pickupBtn.active{
+border:2px solid white;
 }
 
-/* =======================
-   중앙 영역
-======================= */
-.centerPanel{
-position:relative;
-background:#151515;
+/* ================= 가챠 버튼 ================= */
+
+.gachaGroup{
+position:absolute;
+right:6%;
+top:38%;
 display:flex;
-align-items:center;
-justify-content:center;
-overflow:hidden;
+flex-direction:column;
+gap:8%;
+width:20%;
 }
 
-.mainArt{
-font-size:clamp(24px, 4vw, 60px);
-opacity:0.15;
+.gachaBtn{
+background:#111;
+border:2px solid #333;
+padding:8% 6%;
+transform:skewX(-12deg);
 text-align:center;
+font-size:1.4vw;
 }
 
-/* 좌하단 정보 */
+.gachaBtn span{
+display:block;
+transform:skewX(12deg);
+}
+
+/* ================= 좌하단 정보 ================= */
+
 .subInfo{
 position:absolute;
-bottom:5vh;
-left:5vw;
+left:18%;
+bottom:20%;
 display:flex;
 align-items:center;
-gap:2vw;
+gap:3%;
 }
 
 .smallDiamond{
-width:min(14vh,120px);
-height:min(14vh,120px);
+width:7vw;
+height:7vw;
+max-width:120px;
+max-height:120px;
 background:#111;
 transform:rotate(45deg);
 display:flex;
@@ -88,77 +127,44 @@ justify-content:center;
 
 .smallDiamond span{
 transform:rotate(-45deg);
-font-size:clamp(10px,1.2vw,14px);
+font-size:0.9vw;
 }
 
 .glowBar{
 background:#111;
-padding:1vh 1.5vw;
+padding:0.8vw 1.5vw;
 border:1px solid #333;
-font-size:clamp(10px,1.2vw,14px);
+font-size:0.9vw;
 }
 
-/* =======================
-   우측 가챠 버튼
-======================= */
-.rightPanel{
-padding:3vh 2vw;
-display:flex;
-flex-direction:column;
-gap:4vh;
-justify-content:center;
-align-items:flex-end;
-}
+/* ================= 하단 네비 ================= */
 
-.gachaBtn{
-width:100%;
-max-width:260px;
-background:#111;
-border:2px solid #333;
-padding:2vh;
-font-size:clamp(16px,2vw,22px);
-cursor:pointer;
-transform:skewX(-10deg);
-text-align:center;
-}
-
-.gachaBtn span{
-display:block;
-transform:skewX(10deg);
-}
-
-/* =======================
-   하단 네비
-======================= */
 .bottomNav{
-grid-column:1 / span 3;
-background:#0f0f0f;
+position:absolute;
+bottom:5%;
+left:50%;
+transform:translateX(-50%);
 display:flex;
-justify-content:center;
-align-items:center;
-gap:6vw;
-border-top:1px solid #222;
+gap:4vw;
 }
 
 .navDiamond{
-width:min(8vh,70px);
-height:min(8vh,70px);
+width:4.5vw;
+height:4.5vw;
 background:#111;
 transform:rotate(45deg);
 display:flex;
 align-items:center;
 justify-content:center;
-cursor:pointer;
 }
 
 .navDiamond span{
 transform:rotate(-45deg);
-font-size:clamp(14px,2vw,18px);
+font-size:1.3vw;
 }
 
-/* =======================
-   세로 모드 차단
-======================= */
+/* ================= 세로 차단 ================= */
+
 .rotateWarning{
 position:fixed;
 top:0;
@@ -166,51 +172,40 @@ left:0;
 width:100%;
 height:100%;
 background:#0f0f0f;
-color:#fff;
 display:none;
 align-items:center;
 justify-content:center;
 text-align:center;
-font-size:20px;
+font-size:22px;
 z-index:9999;
-padding:20px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="main">
+<div class="screen">
+<div class="canvas">
 
-<!-- 좌측 -->
-<div class="leftPanel">
-<div class="bannerBtn active">픽업 1</div>
-<div class="bannerBtn">픽업 2</div>
-<div class="bannerBtn">통상</div>
+<div class="leftShade"></div>
+
+<!-- 픽업 -->
+<div class="pickupGroup">
+<div class="pickupBtn active">픽업 1</div>
+<div class="pickupBtn">픽업 2</div>
+<div class="pickupBtn">통상</div>
 </div>
 
-<!-- 중앙 -->
-<div class="centerPanel">
-<div class="mainArt">MAIN CHARACTER ART</div>
+<!-- 가챠 -->
+<div class="gachaGroup">
+<div class="gachaBtn"><span>1회 ◇130</span></div>
+<div class="gachaBtn"><span>10회 ◇1300</span></div>
+</div>
 
+<!-- 좌하단 -->
 <div class="subInfo">
-<div class="smallDiamond">
-<span>소형 캐릭터</span>
-</div>
-<div class="glowBar">
-잔광 보정 200 / 200
-</div>
-</div>
-</div>
-
-<!-- 우측 -->
-<div class="rightPanel">
-<div class="gachaBtn">
-<span>1회 ◇130</span>
-</div>
-<div class="gachaBtn">
-<span>10회 ◇1300</span>
-</div>
+<div class="smallDiamond"><span>소형 캐릭터</span></div>
+<div class="glowBar">잔광 보정 200 / 200</div>
 </div>
 
 <!-- 하단 네비 -->
@@ -222,13 +217,11 @@ padding:20px;
 </div>
 
 </div>
-
-<!-- 세로 차단 -->
-<div id="rotateBlock" class="rotateWarning">
-<div>
-📱<br><br>
-이 화면은 가로 모드에서 이용해주세요.
 </div>
+
+<div id="rotateBlock" class="rotateWarning">
+📱<br><br>
+가로 모드에서 이용해주세요.
 </div>
 
 <script>
