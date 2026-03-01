@@ -7,178 +7,107 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{
-background:#0f0f0f;
-overflow:hidden;
-font-family:Pretendard,sans-serif;
-color:white;
-}
+body{background:#0f0f0f;overflow:hidden;font-family:Pretendard,sans-serif;color:white;}
 
-/* 16:9 고정 */
-.screen{
-width:100vw;
-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-}
+/* 16:9 */
+.screen{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;}
+.canvas{position:relative;width:100%;max-width:1600px;aspect-ratio:16/9;overflow:hidden;}
 
-.canvas{
-position:relative;
-width:100%;
-max-width:1600px;
-aspect-ratio:16/9;
-overflow:hidden;
-}
-
-/* 영상 */
-.bgVideo{
-position:absolute;
-width:100%;
-height:100%;
-object-fit:cover;
-z-index:0;
-}
-
-/* 좌측 그라데이션 */
+.bgVideo{position:absolute;width:100%;height:100%;object-fit:cover;z-index:0;}
 .leftShade{
-position:absolute;
-top:0;
-left:0;
-height:100%;
-width:38%;
-background:linear-gradient(to right,
-rgba(0,0,0,0.85) 0%,
-rgba(0,0,0,0.6) 40%,
-rgba(0,0,0,0.2) 70%,
-rgba(0,0,0,0) 100%);
+position:absolute;height:100%;width:38%;
+background:linear-gradient(to right,rgba(0,0,0,0.85),rgba(0,0,0,0));
 z-index:1;
 }
-
-.uiLayer{
-position:absolute;
-width:100%;
-height:100%;
-z-index:2;
-}
+.uiLayer{position:absolute;width:100%;height:100%;z-index:2;}
 
 /* 배너 */
 .pickup{
-position:absolute;
-left:3%;
-width:22%;
-transform:skewX(-12deg);
-cursor:pointer;
-transition:0.25s;
+position:absolute;left:3%;width:22%;
+transform:skewX(-12deg);cursor:pointer;transition:0.25s;
 }
 .pick1{top:12%;}
 .pick2{top:28%;}
 .pick3{top:42%;}
-
 .pickup div{
-background:#111;
-border:2px solid #333;
-padding:6% 8%;
-font-size:1.3vw;
-transform:skewX(12deg);
+background:#111;border:2px solid #333;
+padding:6% 8%;font-size:1.3vw;transform:skewX(12deg);
 }
-
-.pickup.active{
-transform:skewX(-12deg) translateX(0.8vw);
-}
-
-.pickup.active div{
-border-color:#aaa;
-box-shadow:0 0 1vw rgba(255,255,255,0.4);
-}
+.pickup.active{transform:skewX(-12deg) translateX(0.8vw);}
+.pickup.active div{border-color:#aaa;box-shadow:0 0 1vw rgba(255,255,255,0.4);}
 
 /* 가챠 버튼 */
 .gacha{
-position:absolute;
-right:5%;
-width:22%;
-transform:skewX(-12deg);
-cursor:pointer;
+position:absolute;right:5%;width:22%;
+transform:skewX(-12deg);cursor:pointer;
 }
 .gacha7{top:36%;}
 .gacha8{top:50%;}
-
 .gacha div{
-background:#111;
-border:2px solid #333;
-padding:8% 6%;
-font-size:1.5vw;
-text-align:center;
+background:#111;border:2px solid #333;
+padding:8% 6%;font-size:1.5vw;text-align:center;
 transform:skewX(12deg);
 }
 
-/* SD 영역 */
+/* SD */
 .sdWrapper{
-position:absolute;
-left:17%;
-bottom:22%;
-width:10%;
-aspect-ratio:1/1;
-display:flex;
-align-items:center;
-justify-content:center;
+position:absolute;left:17%;bottom:22%;
+width:10%;aspect-ratio:1/1;
+display:flex;align-items:center;justify-content:center;
 }
-
 .diamond{
-position:absolute;
-width:100%;
-height:100%;
-background:#111;
-transform:rotate(45deg);
-z-index:1;
+position:absolute;width:100%;height:100%;
+background:#111;transform:rotate(45deg);z-index:1;
 }
-
 .sdChar{
-position:absolute;
-bottom:-10%;
-width:170%;
-height:auto;
-z-index:2;
-pointer-events:none;
+position:absolute;bottom:-10%;
+width:170%;height:auto;z-index:2;
 }
 
 /* 화살표 */
 .arrow{
-position:absolute;
-top:50%;
-font-size:2vw;
-cursor:pointer;
-z-index:3;
-user-select:none;
+position:absolute;top:50%;font-size:2vw;
+cursor:pointer;z-index:3;user-select:none;
 }
 #leftArrow{left:42%;}
 #rightArrow{right:42%;}
 
+/* 결과 오버레이 */
+.resultOverlay{
+position:absolute;width:100%;height:100%;
+background:rgba(0,0,0,0.9);
+z-index:5;display:none;
+overflow:auto;padding:4%;
+}
+.resultCard{
+background:#1c1c1c;margin-bottom:10px;
+padding:10px;border-radius:6px;
+}
+.infra{color:red;}
+.ultra{color:violet;}
+.lumen{color:silver;}
+.newMark{color:gold;font-weight:bold;}
+.closeBtn{
+position:absolute;top:2%;right:3%;
+cursor:pointer;font-size:1.5vw;
+}
+
 /* 세로 차단 */
 .rotateWarning{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#0f0f0f;
-display:none;
-align-items:center;
-justify-content:center;
-text-align:center;
-font-size:4vw;
-z-index:9999;
+position:fixed;top:0;left:0;
+width:100%;height:100%;
+background:#0f0f0f;display:none;
+align-items:center;justify-content:center;
+font-size:4vw;z-index:9999;
 }
 </style>
 </head>
-
 <body>
 
 <div class="screen">
 <div class="canvas">
 
 <video id="bgVideo" class="bgVideo" muted loop playsinline></video>
-
 <div class="leftShade"></div>
 
 <div class="uiLayer">
@@ -199,6 +128,12 @@ z-index:9999;
 <div id="rightArrow" class="arrow">▶</div>
 
 </div>
+
+<div id="resultOverlay" class="resultOverlay">
+<div class="closeBtn" onclick="closeResult()">✕</div>
+<div id="resultArea"></div>
+</div>
+
 </div>
 </div>
 
@@ -208,10 +143,7 @@ z-index:9999;
 
 <script>
 
-/* =========================
-   전체 DB (완전 포함)
-========================= */
-
+/* ================= DB ================= */
 let DB=[
 {name:"발렌티나",rarity:3,group:"등불사무소"},
 {name:"도로시",rarity:3,group:"등불사무소"},
@@ -275,20 +207,33 @@ let DB=[
 {name:"뮌하우젠",rarity:2,group:"솔레어"}
 ];
 
+/* ================= 상태 ================= */
+let totalCount=parseInt(localStorage.getItem("totalCount"))||0;
+let collection=JSON.parse(localStorage.getItem("collection"))||[];
+let glow=parseInt(localStorage.getItem("glow"))||0;
+let history=JSON.parse(localStorage.getItem("history"))||[];
+
+/* ================= 배너 ================= */
 const BANNERS=[
 {
+pickup3:["발렌티나"],
+pickup2:["올가"],
 preview:[
 {name:"발렌티나",video:"bg1.mp4",sd:"sd1.PNG"},
 {name:"할",video:"bg2.mp4",sd:"sd2.PNG"}
 ]
 },
 {
+pickup3:["도로시"],
+pickup2:["올가"],
 preview:[
 {name:"도로시",video:"bg3.mp4",sd:"sd3.PNG"},
 {name:"올가",video:"bg4.mp4",sd:"sd4.PNG"}
 ]
 },
 {
+pickup3:[],
+pickup2:[],
 preview:[
 {name:"통상",video:"bg5.mp4",sd:""}
 ]
@@ -304,6 +249,7 @@ const sdWrapper=document.getElementById("sdWrapper");
 const leftArrow=document.getElementById("leftArrow");
 const rightArrow=document.getElementById("rightArrow");
 
+/* ================= 배너 미리보기 ================= */
 function updatePreview(){
 let char=BANNERS[currentBanner].preview[currentIndex];
 video.src=char.video;
@@ -320,36 +266,91 @@ rightArrow.style.display="block";
 sdImage.src=char.sd;
 }
 }
-
-leftArrow.onclick=()=>{
-currentIndex--;
-if(currentIndex<0)currentIndex=BANNERS[currentBanner].preview.length-1;
-updatePreview();
-};
-
-rightArrow.onclick=()=>{
-currentIndex++;
-if(currentIndex>=BANNERS[currentBanner].preview.length)currentIndex=0;
-updatePreview();
-};
-
+leftArrow.onclick=()=>{currentIndex--;if(currentIndex<0)currentIndex=BANNERS[currentBanner].preview.length-1;updatePreview();}
+rightArrow.onclick=()=>{currentIndex++;if(currentIndex>=BANNERS[currentBanner].preview.length)currentIndex=0;updatePreview();}
 document.querySelectorAll(".pickup").forEach((el,i)=>{
 el.onclick=()=>{
-currentBanner=i;
-currentIndex=0;
+currentBanner=i;currentIndex=0;
 document.querySelectorAll(".pickup").forEach(p=>p.classList.remove("active"));
-el.classList.add("active");
-updatePreview();
+el.classList.add("active");updatePreview();
 };
 });
 document.querySelectorAll(".pickup")[0].classList.add("active");
 
-document.querySelectorAll(".gacha").forEach(btn=>{
-btn.onclick=()=>{
-alert("가챠 실행 (연출 연결 단계 전)");
-};
-});
+/* ================= 확률 ================= */
+function rollRarity(){
+let r=Math.random();
+if(r<0.03)return 3;
+if(r<0.23)return 2;
+return 1;
+}
 
+function weightedRoll(){
+let rarity=rollRarity();
+let pool=DB.filter(c=>c.rarity===rarity);
+
+if(currentBanner!==2){
+let p3=BANNERS[currentBanner].pickup3;
+let p2=BANNERS[currentBanner].pickup2;
+
+if(rarity===3&&Math.random()<0.5){
+let pick=pool.find(c=>p3.includes(c.name));
+if(pick)return pick;
+}
+if(rarity===2&&Math.random()<0.4){
+let pick=pool.find(c=>p2.includes(c.name));
+if(pick)return pick;
+}
+}
+
+return pool[Math.floor(Math.random()*pool.length)];
+}
+
+/* ================= 가챠 실행 ================= */
+function pull(times){
+let results=[];
+for(let i=0;i<times;i++){
+results.push(weightedRoll());
+}
+if(times===10&&!results.some(c=>c.rarity>=2)){
+let ultraPool=DB.filter(c=>c.rarity===2);
+results[9]=ultraPool[Math.floor(Math.random()*ultraPool.length)];
+}
+showResults(results);
+}
+
+/* ================= 결과 ================= */
+function showResults(results){
+let overlay=document.getElementById("resultOverlay");
+let area=document.getElementById("resultArea");
+area.innerHTML="";
+overlay.style.display="block";
+
+for(let char of results){
+totalCount++;glow++;
+let isNew=!collection.includes(char.name);
+if(isNew)collection.push(char.name);
+
+let div=document.createElement("div");
+div.className="resultCard "+(char.rarity===3?"lumen":char.rarity===2?"ultra":"infra");
+div.innerHTML=`${char.rarity===3?"[LUMEN(★★★)]":char.rarity===2?"[ULTRA(★★)]":"[INFRA(★)]"} ${char.name} ${isNew?'<span class="newMark">New!</span>':''}`;
+area.appendChild(div);
+}
+
+localStorage.setItem("totalCount",totalCount);
+localStorage.setItem("collection",JSON.stringify(collection));
+localStorage.setItem("glow",glow);
+}
+
+function closeResult(){
+document.getElementById("resultOverlay").style.display="none";
+}
+
+/* ================= 버튼 ================= */
+document.querySelector(".gacha7").onclick=()=>pull(1);
+document.querySelector(".gacha8").onclick=()=>pull(10);
+
+/* ================= 세로 차단 ================= */
 function checkOrientation(){
 if(window.innerHeight>window.innerWidth){
 document.getElementById("rotateBlock").style.display="flex";
@@ -358,11 +359,8 @@ document.getElementById("rotateBlock").style.display="none";
 }
 }
 window.addEventListener("resize",checkOrientation);
-window.addEventListener("load",()=>{
-updatePreview();
-checkOrientation();
-});
-</script>
+window.addEventListener("load",()=>{updatePreview();checkOrientation();});
 
+</script>
 </body>
 </html>
