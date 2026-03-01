@@ -121,26 +121,36 @@ font-size:1.5vw;
 transform:skewX(12deg);
 }
 
-/* SD 마름모 */
-.bigDiamond{
+/* SD 영역 */
+.sdWrapper{
 position:absolute;
 left:17%;
 bottom:22%;
 width:10%;
 aspect-ratio:1/1;
-background:#111;
-transform:rotate(45deg);
 display:flex;
 align-items:center;
 justify-content:center;
-overflow:hidden;
 }
 
-.bigDiamond img{
-width:140%;
-height:140%;
-object-fit:contain;
-transform:rotate(-45deg);
+.bigDiamond{
+position:absolute;
+width:100%;
+height:100%;
+background:#111;
+transform:rotate(45deg);
+z-index:1;
+}
+
+.sdChar{
+position:absolute;
+bottom:0;
+left:50%;
+transform:translateX(-50%);
+width:170%;
+height:auto;
+z-index:2;
+pointer-events:none;
 }
 
 /* 화살표 */
@@ -193,8 +203,9 @@ z-index:9999;
 <div class="gacha gacha7"><div>1회 ◇130</div></div>
 <div class="gacha gacha8"><div>10회 ◇1300</div></div>
 
-<div class="bigDiamond">
-  <img id="sdImage" src="">
+<div class="sdWrapper" id="sdWrapper">
+  <div class="bigDiamond"></div>
+  <img id="sdImage" class="sdChar" src="">
 </div>
 
 <div id="leftArrow" class="arrow">◀</div>
@@ -211,7 +222,7 @@ z-index:9999;
 <script>
 
 /* =========================
-   전체 캐릭터 DB (복원)
+   전체 캐릭터 DB (원본 복구)
 ========================= */
 
 let DB=[{name:"발렌티나",rarity:3,group:"등불사무소"},
@@ -276,26 +287,23 @@ let DB=[{name:"발렌티나",rarity:3,group:"등불사무소"},
 {name:"뮌하우젠",rarity:2,group:"솔레어"}];
 
 /* =========================
-   배너 설정
+   배너 프리뷰 설정
 ========================= */
 
 const BANNERS = [
 {
-name:"픽업 1",
 preview:[
 { name:"발렌티나", video:"bg1.mp4", sd:"sd1.png" },
 { name:"할", video:"bg2.mp4", sd:"sd2.png" }
 ]
 },
 {
-name:"픽업 2",
 preview:[
 { name:"도로시", video:"bg3.mp4", sd:"sd3.png" },
 { name:"올가", video:"bg4.mp4", sd:"sd4.png" }
 ]
 },
 {
-name:"통상",
 preview:[
 { name:"통상", video:"bg5.mp4", sd:"" }
 ]
@@ -307,10 +315,9 @@ let currentIndex=0;
 
 const video=document.getElementById("bgVideo");
 const sdImage=document.getElementById("sdImage");
+const sdWrapper=document.getElementById("sdWrapper");
 const leftArrow=document.getElementById("leftArrow");
 const rightArrow=document.getElementById("rightArrow");
-
-/* 배너 선택 */
 
 document.querySelectorAll(".pickup").forEach((el,i)=>{
 el.addEventListener("click",()=>{
@@ -323,29 +330,24 @@ updatePreview();
 });
 document.querySelectorAll(".pickup")[0].classList.add("active");
 
-/* 프리뷰 */
-
 function updatePreview(){
 let banner=BANNERS[currentBanner];
 let char=banner.preview[currentIndex];
-
 video.src=char.video;
 video.load();
 video.play().catch(()=>{});
 
 if(currentBanner===2){
-sdImage.style.display="none";
+sdWrapper.style.display="none";
 leftArrow.style.display="none";
 rightArrow.style.display="none";
 }else{
-sdImage.style.display="block";
+sdWrapper.style.display="flex";
 leftArrow.style.display="block";
 rightArrow.style.display="block";
 sdImage.src=char.sd;
 }
 }
-
-/* 화살표 */
 
 leftArrow.onclick=()=>{
 currentIndex--;
@@ -361,7 +363,7 @@ updatePreview();
 updatePreview();
 
 /* =========================
-   가챠 확률
+   가챠
 ========================= */
 
 function rollRarity(){
@@ -388,17 +390,16 @@ weighted.push(c);
 });
 pool=weighted;
 }
+
 results.push(pool[Math.floor(Math.random()*pool.length)]);
 }
 console.log(results);
 }
 
-/* 버튼 연결 */
-
 document.querySelector(".gacha7").onclick=()=>rollGacha(1);
 document.querySelector(".gacha8").onclick=()=>rollGacha(10);
 
-/* 가로 체크 */
+/* 가로 모드 체크 */
 
 function checkOrientation(){
 if(window.innerHeight>window.innerWidth){
