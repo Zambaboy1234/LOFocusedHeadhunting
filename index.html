@@ -250,29 +250,72 @@ return 1;
 
 function rollGacha(times){
 let results=[];
+
 for(let i=0;i<times;i++){
+
 let rarity=rollRarity();
 let pool=DB.filter(c=>c.rarity===rarity);
 
 if(currentBanner!==2){
-let pickup=BANNERS[currentBanner].pickup;
-let weighted=[];
-pool.forEach(c=>{
-if(pickup.includes(c.name)){
-weighted.push(c,c,c);
-}else{
-weighted.push(c);
+
+let pickupList=BANNERS[currentBanner].pickup;
+
+if(pickupList.length>0){
+
+/* ===== 3성 픽업 50% ===== */
+if(rarity===3){
+if(Math.random()<0.5){
+let pickupPool=pool.filter(c=>pickupList.includes(c.name));
+if(pickupPool.length>0){
+results.push(pickupPool[Math.floor(Math.random()*pickupPool.length)]);
+continue;
 }
-});
-pool=weighted;
+}
 }
 
+/* ===== 2성 픽업 30% ===== */
+if(rarity===2){
+if(Math.random()<0.3){
+let pickupPool=pool.filter(c=>pickupList.includes(c.name));
+if(pickupPool.length>0){
+results.push(pickupPool[Math.floor(Math.random()*pickupPool.length)]);
+continue;
+}
+}
+}
+
+}
+
+}
+
+/* 일반 풀 */
 results.push(pool[Math.floor(Math.random()*pool.length)]);
 }
 
-if(times===10&&!results.some(c=>c.rarity>=2)){
-let ultraPool=DB.filter(c=>c.rarity===2);
-results[9]=ultraPool[Math.floor(Math.random()*ultraPool.length)];
+/* ===== 10연 보정 ===== */
+if(times===10 && !results.some(c=>c.rarity>=2)){
+
+let rarity=2;
+let pool=DB.filter(c=>c.rarity===2);
+
+if(currentBanner!==2){
+let pickupList=BANNERS[currentBanner].pickup;
+
+/* 2성 보정도 동일 30% 룰 적용 */
+if(pickupList.length>0 && Math.random()<0.3){
+let pickupPool=pool.filter(c=>pickupList.includes(c.name));
+if(pickupPool.length>0){
+results[9]=pickupPool[Math.floor(Math.random()*pickupPool.length)];
+}else{
+results[9]=pool[Math.floor(Math.random()*pool.length)];
+}
+}else{
+results[9]=pool[Math.floor(Math.random()*pool.length)];
+}
+}else{
+results[9]=pool[Math.floor(Math.random()*pool.length)];
+}
+
 }
 
 return results;
