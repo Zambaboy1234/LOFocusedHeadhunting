@@ -14,6 +14,7 @@ font-family:Pretendard,sans-serif;
 color:white;
 }
 
+/* 16:9 고정 */
 .screen{
 width:100vw;
 height:100vh;
@@ -39,14 +40,24 @@ object-fit:cover;
 z-index:0;
 }
 
+/* 좌측 블랙 */
 .leftShade{
 position:absolute;
+top:0;
+left:0;
 height:100%;
 width:38%;
-background:linear-gradient(to right,rgba(0,0,0,0.85),rgba(0,0,0,0));
+background:linear-gradient(
+to right,
+rgba(0,0,0,0.85) 0%,
+rgba(0,0,0,0.6) 40%,
+rgba(0,0,0,0.3) 65%,
+rgba(0,0,0,0) 100%
+);
 z-index:1;
 }
 
+/* UI */
 .uiLayer{
 position:absolute;
 width:100%;
@@ -60,8 +71,8 @@ position:absolute;
 left:3%;
 width:22%;
 transform:skewX(-12deg);
+transition:0.25s ease;
 cursor:pointer;
-transition:0.2s;
 }
 .pick1{top:12%;}
 .pick2{top:28%;}
@@ -71,16 +82,17 @@ transition:0.2s;
 background:#111;
 border:2px solid #333;
 padding:6% 8%;
+font-size:1.3vw;
 transform:skewX(12deg);
 }
 
 .pickup.active{
-transform:skewX(-12deg) translateX(15px);
+transform:skewX(-12deg) translateX(0.8vw);
 }
 
 .pickup.active div{
-border-color:#aaa;
-box-shadow:0 0 15px rgba(255,255,255,0.4);
+border-color:#999;
+box-shadow:0 0 1vw rgba(255,255,255,0.4);
 }
 
 /* 가챠 버튼 */
@@ -98,6 +110,7 @@ cursor:pointer;
 background:#111;
 border:2px solid #333;
 padding:8% 6%;
+font-size:1.5vw;
 text-align:center;
 transform:skewX(12deg);
 }
@@ -107,8 +120,8 @@ transform:skewX(12deg);
 position:absolute;
 left:17%;
 bottom:22%;
-width:220px;
-height:220px;
+width:10%;
+aspect-ratio:1/1;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -117,18 +130,18 @@ justify-content:center;
 /* 마름모 */
 .diamond{
 position:absolute;
-width:200px;
-height:200px;
+width:100%;
+height:100%;
 background:#111;
 transform:rotate(45deg);
 z-index:1;
 }
 
-/* SD 캐릭터 */
+/* SD */
 .sdChar{
 position:absolute;
-bottom:0;
-width:260px;
+bottom:-10%;
+width:170%;
 height:auto;
 z-index:2;
 pointer-events:none;
@@ -138,33 +151,28 @@ pointer-events:none;
 .arrow{
 position:absolute;
 top:50%;
-font-size:40px;
+font-size:2vw;
 cursor:pointer;
-z-index:3;
 user-select:none;
+z-index:3;
 }
-#leftArrow{left:38%;}
-#rightArrow{right:38%;}
+#leftArrow{left:42%;}
+#rightArrow{right:42%;}
 
-/* 연출 */
-.overlay{
-position:absolute;
+/* 가로 차단 */
+.rotateWarning{
+position:fixed;
+top:0;
+left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.9);
-z-index:10;
+background:#0f0f0f;
 display:none;
+align-items:center;
+justify-content:center;
 text-align:center;
-padding-top:15%;
-}
-
-.overlay button{
-margin:10px;
-padding:10px 20px;
-background:#222;
-color:white;
-border:1px solid #555;
-cursor:pointer;
+font-size:4vw;
+z-index:9999;
 }
 </style>
 </head>
@@ -191,161 +199,30 @@ cursor:pointer;
 
 <div class="sdWrapper" id="sdWrapper">
 <div class="diamond"></div>
-<img id="sdImage" class="sdChar" src="">
+<img id="sdImage" class="sdChar" src="sd1.PNG">
 </div>
 
 <div id="leftArrow" class="arrow">◀</div>
 <div id="rightArrow" class="arrow">▶</div>
 
 </div>
-
-<div id="chargeLayer" class="overlay"></div>
-<div id="iconLayer" class="overlay"></div>
-<div id="newsLayer" class="overlay"></div>
-<div id="finalLayer" class="overlay"></div>
-
 </div>
+</div>
+
+<div id="rotateBlock" class="rotateWarning">
+📱 가로 모드에서 이용해주세요.
 </div>
 
 <script>
-
-/* =========================
-   전체 DB (완전 복구)
-========================= */
-
-let DB=[{name:"발렌티나",rarity:3,group:"등불사무소"},
-{name:"도로시",rarity:3,group:"등불사무소"},
-{name:"백연",rarity:3,group:"등불사무소"},
-{name:"쿠로세",rarity:3,group:"등불사무소"},
-{name:"올가",rarity:2,group:"등불사무소"},
-{name:"비아트리스",rarity:3,group:"등불사무소"},
-{name:"유나",rarity:2,group:"등불사무소"},
-{name:"오웬",rarity:2,group:"등불사무소"},
-{name:"할",rarity:1,group:"등불사무소"},
-{name:"재클린",rarity:1,group:"등불사무소"},
-{name:"마리",rarity:3,group:"아스트론 학파 연구지구"},
-{name:"가온",rarity:3,group:"아스트론 학파 연구지구"},
-{name:"아이린",rarity:3,group:"아스트론 학파 연구지구"},
-{name:"노딘",rarity:3,group:"아스트론 학파 연구지구"},
-{name:"니콜라",rarity:2,group:"아스트론 학파 연구지구"},
-{name:"로렌츠",rarity:2,group:"아스트론 학파 연구지구"},
-{name:"프리츠",rarity:1,group:"아스트론 학파 연구지구"},
-{name:"베르너",rarity:1,group:"아스트론 학파 연구지구"},
-{name:"셀렌느",rarity:3,group:"하르덴브라흐"},
-{name:"마커스",rarity:3,group:"하르덴브라흐"},
-{name:"암젤",rarity:2,group:"하르덴브라흐"},
-{name:"에밀리",rarity:1,group:"하르덴브라흐"},
-{name:"안드레이",rarity:3,group:"66구역"},
-{name:"드미트리",rarity:3,group:"66구역"},
-{name:"공주",rarity:3,group:"66구역"},
-{name:"안나",rarity:2,group:"66구역"},
-{name:"모리어티",rarity:3,group:"터미널15"},
-{name:"미셸",rarity:3,group:"터미널15"},
-{name:"카산드라",rarity:3,group:"터미널15"},
-{name:"제럴드",rarity:1,group:"터미널15"},
-{name:"루핀",rarity:3,group:"볼칸 중공업"},
-{name:"요루",rarity:3,group:"볼칸 중공업"},
-{name:"헤더스",rarity:1,group:"볼칸 중공업"},
-{name:"올리버",rarity:3,group:"찰스 브리게이드"},
-{name:"오지에",rarity:3,group:"찰스 브리게이드"},
-{name:"람다",rarity:3,group:"찰스 브리게이드"},
-{name:"카롤",rarity:3,group:"찰스 브리게이드"},
-{name:"모지",rarity:3,group:"찰스 브리게이드"},
-{name:"란",rarity:3,group:"찰스 브리게이드"},
-{name:"나모",rarity:2,group:"찰스 브리게이드"},
-{name:"엘리아OS",rarity:3,group:"힌튼 아카이브"},
-{name:"렌카",rarity:3,group:"미나모토"},
-{name:"아토스",rarity:3,group:"미나모토"},
-{name:"간류",rarity:3,group:"미나모토"},
-{name:"레아",rarity:3,group:"미나모토"},
-{name:"로건",rarity:2,group:"미나모토"},
-{name:"츠카하라",rarity:1,group:"미나모토"},
-{name:"랜슬롯",rarity:3,group:"아발론PMC"},
-{name:"케이",rarity:3,group:"아발론PMC"},
-{name:"트리스탄",rarity:3,group:"아발론PMC"},
-{name:"이졸데",rarity:3,group:"아발론PMC"},
-{name:"노미",rarity:3,group:"아발론PMC"},
-{name:"가레스",rarity:2,group:"아발론PMC"},
-{name:"이졸드",rarity:2,group:"아발론PMC"},
-{name:"미래",rarity:3,group:"서천그룹"},
-{name:"리",rarity:3,group:"서천그룹"},
-{name:"이안",rarity:2,group:"서천그룹"},
-{name:"리나",rarity:1,group:"서천그룹"},
-{name:"스테파네트",rarity:3,group:"솔레어"},
-{name:"뮌하우젠",rarity:2,group:"솔레어"}
-];
-
-/* ========================= */
-
-const BANNERS=[
-{
-preview:[
-{name:"발렌티나",video:"bg1.mp4",sd:"sd1.PNG"},
-{name:"할",video:"bg2.mp4",sd:"sd2.PNG"}
-]
-},
-{
-preview:[
-{name:"도로시",video:"bg3.mp4",sd:"sd3.PNG"},
-{name:"올가",video:"bg4.mp4",sd:"sd4.PNG"}
-]
-},
-{
-preview:[
-{name:"통상",video:"bg5.mp4",sd:""}
-]
-}
-];
-
-let currentBanner=0;
-let currentIndex=0;
-
-const video=document.getElementById("bgVideo");
-const sdImage=document.getElementById("sdImage");
-const sdWrapper=document.getElementById("sdWrapper");
-
-function updatePreview(){
-let char=BANNERS[currentBanner].preview[currentIndex];
-
-video.src=char.video;
-video.play();
-
-if(currentBanner===2){
-sdWrapper.style.display="none";
-document.getElementById("leftArrow").style.display="none";
-document.getElementById("rightArrow").style.display="none";
+function checkOrientation(){
+if(window.innerHeight>window.innerWidth){
+document.getElementById("rotateBlock").style.display="flex";
 }else{
-sdWrapper.style.display="flex";
-document.getElementById("leftArrow").style.display="block";
-document.getElementById("rightArrow").style.display="block";
-sdImage.src=char.sd;
+document.getElementById("rotateBlock").style.display="none";
 }
 }
-
-document.getElementById("leftArrow").onclick=()=>{
-currentIndex--;
-if(currentIndex<0)currentIndex=BANNERS[currentBanner].preview.length-1;
-updatePreview();
-};
-document.getElementById("rightArrow").onclick=()=>{
-currentIndex++;
-if(currentIndex>=BANNERS[currentBanner].preview.length)currentIndex=0;
-updatePreview();
-};
-
-document.querySelectorAll(".pickup").forEach((el,i)=>{
-el.onclick=()=>{
-currentBanner=i;
-currentIndex=0;
-document.querySelectorAll(".pickup").forEach(p=>p.classList.remove("active"));
-el.classList.add("active");
-updatePreview();
-};
-});
-document.querySelectorAll(".pickup")[0].classList.add("active");
-
-updatePreview();
-
+window.addEventListener("resize",checkOrientation);
+window.addEventListener("load",checkOrientation);
 </script>
 
 </body>
