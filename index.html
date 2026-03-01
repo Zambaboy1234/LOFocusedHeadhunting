@@ -121,49 +121,53 @@ font-size:1.5vw;
 transform:skewX(12deg);
 }
 
-/* SD 영역 */
-.sdWrapper{
+/* SD 마름모 */
+.bigDiamond{
 position:absolute;
 left:17%;
 bottom:22%;
 width:10%;
 aspect-ratio:1/1;
+background:#111;
+transform:rotate(45deg);
+background-size:cover;
+background-position:center;
 display:flex;
 align-items:center;
 justify-content:center;
 }
 
-.bigDiamond{
+.bigDiamond span{
+transform:rotate(-45deg);
+font-size:1vw;
+}
+
+/* 오버레이 */
+.overlay{
 position:absolute;
+top:0;
+left:0;
 width:100%;
 height:100%;
-background:#111;
-transform:rotate(45deg);
-z-index:1;
+background:rgba(0,0,0,0.9);
+z-index:10;
+display:none;
+text-align:center;
+padding-top:15%;
 }
 
-.sdChar{
-position:absolute;
-bottom:0;
-left:50%;
-transform:translateX(-50%);
-width:170%;
-height:auto;
-z-index:2;
-pointer-events:none;
+.overlay h2{
+margin-bottom:20px;
 }
 
-/* 화살표 */
-.arrow{
-position:absolute;
-top:50%;
-font-size:2vw;
+.overlay button{
+margin:10px;
+padding:10px 20px;
+background:#222;
+color:white;
+border:1px solid #555;
 cursor:pointer;
-z-index:3;
-user-select:none;
 }
-#leftArrow{ left:42%; }
-#rightArrow{ right:42%; }
 
 /* 세로 차단 */
 .rotateWarning{
@@ -203,15 +207,16 @@ z-index:9999;
 <div class="gacha gacha7"><div>1회 ◇130</div></div>
 <div class="gacha gacha8"><div>10회 ◇1300</div></div>
 
-<div class="sdWrapper" id="sdWrapper">
-  <div class="bigDiamond"></div>
-  <img id="sdImage" class="sdChar" src="">
-</div>
-
-<div id="leftArrow" class="arrow">◀</div>
-<div id="rightArrow" class="arrow">▶</div>
+<div class="bigDiamond"><span></span></div>
 
 </div>
+
+<!-- 연출 레이어 -->
+<div id="chargeLayer" class="overlay"></div>
+<div id="iconLayer" class="overlay"></div>
+<div id="newsLayer" class="overlay"></div>
+<div id="finalLayer" class="overlay"></div>
+
 </div>
 </div>
 
@@ -222,7 +227,7 @@ z-index:9999;
 <script>
 
 /* =========================
-   전체 캐릭터 DB (원본 복구)
+   전체 캐릭터 DB
 ========================= */
 
 let DB=[{name:"발렌티나",rarity:3,group:"등불사무소"},
@@ -234,95 +239,46 @@ let DB=[{name:"발렌티나",rarity:3,group:"등불사무소"},
 {name:"유나",rarity:2,group:"등불사무소"},
 {name:"오웬",rarity:2,group:"등불사무소"},
 {name:"할",rarity:1,group:"등불사무소"},
-{name:"재클린",rarity:1,group:"등불사무소"},
-{name:"마리",rarity:3,group:"아스트론 학파 연구지구"},
-{name:"가온",rarity:3,group:"아스트론 학파 연구지구"},
-{name:"아이린",rarity:3,group:"아스트론 학파 연구지구"},
-{name:"노딘",rarity:3,group:"아스트론 학파 연구지구"},
-{name:"니콜라",rarity:2,group:"아스트론 학파 연구지구"},
-{name:"로렌츠",rarity:2,group:"아스트론 학파 연구지구"},
-{name:"프리츠",rarity:1,group:"아스트론 학파 연구지구"},
-{name:"베르너",rarity:1,group:"아스트론 학파 연구지구"},
-{name:"셀렌느",rarity:3,group:"하르덴브라흐"},
-{name:"마커스",rarity:3,group:"하르덴브라흐"},
-{name:"암젤",rarity:2,group:"하르덴브라흐"},
-{name:"에밀리",rarity:1,group:"하르덴브라흐"},
-{name:"안드레이",rarity:3,group:"66구역"},
-{name:"드미트리",rarity:3,group:"66구역"},
-{name:"공주",rarity:3,group:"66구역"},
-{name:"안나",rarity:2,group:"66구역"},
-{name:"모리어티",rarity:3,group:"터미널15"},
-{name:"미셸",rarity:3,group:"터미널15"},
-{name:"카산드라",rarity:3,group:"터미널15"},
-{name:"제럴드",rarity:1,group:"터미널15"},
-{name:"루핀",rarity:3,group:"볼칸 중공업"},
-{name:"요루",rarity:3,group:"볼칸 중공업"},
-{name:"헤더스",rarity:1,group:"볼칸 중공업"},
-{name:"올리버",rarity:3,group:"찰스 브리게이드"},
-{name:"오지에",rarity:3,group:"찰스 브리게이드"},
-{name:"람다",rarity:3,group:"찰스 브리게이드"},
-{name:"카롤",rarity:3,group:"찰스 브리게이드"},
-{name:"모지",rarity:3,group:"찰스 브리게이드"},
-{name:"란",rarity:3,group:"찰스 브리게이드"},
-{name:"나모",rarity:2,group:"찰스 브리게이드"},
-{name:"엘리아OS",rarity:3,group:"힌튼 아카이브"},
-{name:"렌카",rarity:3,group:"미나모토"},
-{name:"아토스",rarity:3,group:"미나모토"},
-{name:"간류",rarity:3,group:"미나모토"},
-{name:"레아",rarity:3,group:"미나모토"},
-{name:"로건",rarity:2,group:"미나모토"},
-{name:"츠카하라",rarity:1,group:"미나모토"},
-{name:"랜슬롯",rarity:3,group:"아발론PMC"},
-{name:"케이",rarity:3,group:"아발론PMC"},
-{name:"트리스탄",rarity:3,group:"아발론PMC"},
-{name:"이졸데",rarity:3,group:"아발론PMC"},
-{name:"노미",rarity:3,group:"아발론PMC"},
-{name:"가레스",rarity:2,group:"아발론PMC"},
-{name:"이졸드",rarity:2,group:"아발론PMC"},
-{name:"미래",rarity:3,group:"서천그룹"},
-{name:"리",rarity:3,group:"서천그룹"},
-{name:"이안",rarity:2,group:"서천그룹"},
-{name:"리나",rarity:1,group:"서천그룹"},
-{name:"스테파네트",rarity:3,group:"솔레어"},
-{name:"뮌하우젠",rarity:2,group:"솔레어"}];
+{name:"재클린",rarity:1,group:"등불사무소"}];
 
 /* =========================
-   배너 프리뷰 설정
+   배너
 ========================= */
 
-const BANNERS = [
+const BANNERS=[
 {
-preview:[
-{ name:"발렌티나", video:"bg1.mp4", sd:"sd1.png" },
-{ name:"할", video:"bg2.mp4", sd:"sd2.png" }
+name:"픽업 1",
+characters:[
+{name:"발렌티나",rarity:3,video:"bg1.mp4",sd:"sd1.PNG"},
+{name:"할",rarity:2,video:"bg2.mp4",sd:"sd2.PNG"}
 ]
 },
 {
-preview:[
-{ name:"도로시", video:"bg3.mp4", sd:"sd3.png" },
-{ name:"올가", video:"bg4.mp4", sd:"sd4.png" }
+name:"픽업 2",
+characters:[
+{name:"도로시",rarity:3,video:"bg3.mp4",sd:"sd3.PNG"},
+{name:"올가",rarity:2,video:"bg4.mp4",sd:"sd4.PNG"}
 ]
 },
 {
-preview:[
-{ name:"통상", video:"bg5.mp4", sd:"" }
+name:"통상",
+characters:[
+{name:"통상",rarity:1,video:"bg5.mp4",sd:""}
 ]
 }
 ];
 
 let currentBanner=0;
-let currentIndex=0;
+let GAME={isRolling:false,results:[],newsIndex:0};
 
 const video=document.getElementById("bgVideo");
-const sdImage=document.getElementById("sdImage");
-const sdWrapper=document.getElementById("sdWrapper");
-const leftArrow=document.getElementById("leftArrow");
-const rightArrow=document.getElementById("rightArrow");
+const diamond=document.querySelector(".bigDiamond span");
 
-document.querySelectorAll(".pickup").forEach((el,i)=>{
+/* 배너 선택 */
+
+document.querySelectorAll(".pickup").forEach((el,index)=>{
 el.addEventListener("click",()=>{
-currentBanner=i;
-currentIndex=0;
+currentBanner=index;
 document.querySelectorAll(".pickup").forEach(p=>p.classList.remove("active"));
 el.classList.add("active");
 updatePreview();
@@ -332,38 +288,23 @@ document.querySelectorAll(".pickup")[0].classList.add("active");
 
 function updatePreview(){
 let banner=BANNERS[currentBanner];
-let char=banner.preview[currentIndex];
+let char=banner.characters[0];
+
 video.src=char.video;
 video.load();
 video.play().catch(()=>{});
 
 if(currentBanner===2){
-sdWrapper.style.display="none";
-leftArrow.style.display="none";
-rightArrow.style.display="none";
+diamond.innerText="";
+document.querySelector(".bigDiamond").style.backgroundImage="none";
 }else{
-sdWrapper.style.display="flex";
-leftArrow.style.display="block";
-rightArrow.style.display="block";
-sdImage.src=char.sd;
+diamond.innerText=char.name;
+document.querySelector(".bigDiamond").style.backgroundImage=`url(${char.sd})`;
 }
 }
-
-leftArrow.onclick=()=>{
-currentIndex--;
-if(currentIndex<0)currentIndex=BANNERS[currentBanner].preview.length-1;
-updatePreview();
-};
-rightArrow.onclick=()=>{
-currentIndex++;
-if(currentIndex>=BANNERS[currentBanner].preview.length)currentIndex=0;
-updatePreview();
-};
-
-updatePreview();
 
 /* =========================
-   가챠
+   가챠 엔진
 ========================= */
 
 function rollRarity(){
@@ -375,12 +316,15 @@ return 1;
 
 function rollGacha(times){
 let results=[];
+
 for(let i=0;i<times;i++){
+
 let rarity=rollRarity();
 let pool=DB.filter(c=>c.rarity===rarity);
 
+/* 픽업 가중치 */
 if(currentBanner!==2){
-let pickupNames=BANNERS[currentBanner].preview.map(c=>c.name);
+let pickupNames=BANNERS[currentBanner].characters.map(c=>c.name);
 let weighted=[];
 pool.forEach(c=>{
 if(pickupNames.includes(c.name)){
@@ -393,13 +337,95 @@ pool=weighted;
 
 results.push(pool[Math.floor(Math.random()*pool.length)]);
 }
-console.log(results);
+
+return results;
 }
 
-document.querySelector(".gacha7").onclick=()=>rollGacha(1);
-document.querySelector(".gacha8").onclick=()=>rollGacha(10);
+document.querySelector(".gacha7").addEventListener("click",()=>startGacha(1));
+document.querySelector(".gacha8").addEventListener("click",()=>startGacha(10));
 
-/* 가로 모드 체크 */
+function startGacha(times){
+if(GAME.isRolling)return;
+GAME.isRolling=true;
+GAME.results=rollGacha(times);
+showCharge();
+}
+
+function showCharge(){
+let layer=document.getElementById("chargeLayer");
+layer.style.display="block";
+layer.innerHTML=`<h2>차징 중...</h2>
+<button onclick="nextToIcons()">손 놓기</button>
+<button onclick="skipGacha()">스킵</button>`;
+}
+
+function nextToIcons(){
+document.getElementById("chargeLayer").style.display="none";
+showIcons();
+}
+
+function showIcons(){
+let layer=document.getElementById("iconLayer");
+layer.style.display="block";
+let html="<h2>등급 공개</h2>";
+GAME.results.forEach(r=>{
+html+=`<div>${r.rarity}성</div>`;
+});
+html+=`<button onclick="nextToNews()">다음</button>
+<button onclick="skipGacha()">스킵</button>`;
+layer.innerHTML=html;
+}
+
+function nextToNews(){
+document.getElementById("iconLayer").style.display="none";
+GAME.newsIndex=0;
+showNews();
+}
+
+function showNews(){
+let layer=document.getElementById("newsLayer");
+layer.style.display="block";
+let char=GAME.results[GAME.newsIndex];
+layer.innerHTML=`<h2>${char.name}</h2>
+<p>${char.rarity}성</p>
+<button onclick="nextNews()">다음</button>
+<button onclick="skipGacha()">스킵</button>`;
+}
+
+function nextNews(){
+GAME.newsIndex++;
+if(GAME.newsIndex>=GAME.results.length){
+document.getElementById("newsLayer").style.display="none";
+showFinal();
+}else{
+showNews();
+}
+}
+
+function showFinal(){
+let layer=document.getElementById("finalLayer");
+layer.style.display="block";
+let html="<h2>최종 결과</h2>";
+GAME.results.forEach(r=>{
+html+=`<div>${r.name} (${r.rarity}성)</div>`;
+});
+html+=`<button onclick="resetToBanner()">확인</button>`;
+layer.innerHTML=html;
+}
+
+function skipGacha(){
+document.getElementById("chargeLayer").style.display="none";
+document.getElementById("iconLayer").style.display="none";
+document.getElementById("newsLayer").style.display="none";
+showFinal();
+}
+
+function resetToBanner(){
+document.getElementById("finalLayer").style.display="none";
+GAME.isRolling=false;
+}
+
+updatePreview();
 
 function checkOrientation(){
 if(window.innerHeight>window.innerWidth){
@@ -412,5 +438,6 @@ window.addEventListener("resize",checkOrientation);
 window.addEventListener("load",checkOrientation);
 
 </script>
+
 </body>
 </html>
