@@ -40,24 +40,21 @@ object-fit:cover;
 z-index:0;
 }
 
-/* 좌측 블랙 */
+/* 좌측 그라데이션 */
 .leftShade{
 position:absolute;
 top:0;
 left:0;
 height:100%;
 width:38%;
-background:linear-gradient(
-to right,
+background:linear-gradient(to right,
 rgba(0,0,0,0.85) 0%,
 rgba(0,0,0,0.6) 40%,
-rgba(0,0,0,0.3) 65%,
-rgba(0,0,0,0) 100%
-);
+rgba(0,0,0,0.2) 70%,
+rgba(0,0,0,0) 100%);
 z-index:1;
 }
 
-/* UI */
 .uiLayer{
 position:absolute;
 width:100%;
@@ -71,8 +68,8 @@ position:absolute;
 left:3%;
 width:22%;
 transform:skewX(-12deg);
-transition:0.25s ease;
 cursor:pointer;
+transition:0.25s;
 }
 .pick1{top:12%;}
 .pick2{top:28%;}
@@ -91,7 +88,7 @@ transform:skewX(-12deg) translateX(0.8vw);
 }
 
 .pickup.active div{
-border-color:#999;
+border-color:#aaa;
 box-shadow:0 0 1vw rgba(255,255,255,0.4);
 }
 
@@ -127,7 +124,6 @@ align-items:center;
 justify-content:center;
 }
 
-/* 마름모 */
 .diamond{
 position:absolute;
 width:100%;
@@ -137,7 +133,6 @@ transform:rotate(45deg);
 z-index:1;
 }
 
-/* SD */
 .sdChar{
 position:absolute;
 bottom:-10%;
@@ -153,13 +148,13 @@ position:absolute;
 top:50%;
 font-size:2vw;
 cursor:pointer;
-user-select:none;
 z-index:3;
+user-select:none;
 }
 #leftArrow{left:42%;}
 #rightArrow{right:42%;}
 
-/* 가로 차단 */
+/* 세로 차단 */
 .rotateWarning{
 position:fixed;
 top:0;
@@ -182,9 +177,7 @@ z-index:9999;
 <div class="screen">
 <div class="canvas">
 
-<video id="bgVideo" class="bgVideo" muted loop playsinline>
-<source src="bg1.mp4" type="video/mp4">
-</video>
+<video id="bgVideo" class="bgVideo" muted loop playsinline></video>
 
 <div class="leftShade"></div>
 
@@ -199,7 +192,7 @@ z-index:9999;
 
 <div class="sdWrapper" id="sdWrapper">
 <div class="diamond"></div>
-<img id="sdImage" class="sdChar" src="sd1.PNG">
+<img id="sdImage" class="sdChar">
 </div>
 
 <div id="leftArrow" class="arrow">◀</div>
@@ -214,6 +207,149 @@ z-index:9999;
 </div>
 
 <script>
+
+/* =========================
+   전체 DB (완전 포함)
+========================= */
+
+let DB=[
+{name:"발렌티나",rarity:3,group:"등불사무소"},
+{name:"도로시",rarity:3,group:"등불사무소"},
+{name:"백연",rarity:3,group:"등불사무소"},
+{name:"쿠로세",rarity:3,group:"등불사무소"},
+{name:"올가",rarity:2,group:"등불사무소"},
+{name:"비아트리스",rarity:3,group:"등불사무소"},
+{name:"유나",rarity:2,group:"등불사무소"},
+{name:"오웬",rarity:2,group:"등불사무소"},
+{name:"할",rarity:1,group:"등불사무소"},
+{name:"재클린",rarity:1,group:"등불사무소"},
+{name:"마리",rarity:3,group:"아스트론 학파 연구지구"},
+{name:"가온",rarity:3,group:"아스트론 학파 연구지구"},
+{name:"아이린",rarity:3,group:"아스트론 학파 연구지구"},
+{name:"노딘",rarity:3,group:"아스트론 학파 연구지구"},
+{name:"니콜라",rarity:2,group:"아스트론 학파 연구지구"},
+{name:"로렌츠",rarity:2,group:"아스트론 학파 연구지구"},
+{name:"프리츠",rarity:1,group:"아스트론 학파 연구지구"},
+{name:"베르너",rarity:1,group:"아스트론 학파 연구지구"},
+{name:"셀렌느",rarity:3,group:"하르덴브라흐"},
+{name:"마커스",rarity:3,group:"하르덴브라흐"},
+{name:"암젤",rarity:2,group:"하르덴브라흐"},
+{name:"에밀리",rarity:1,group:"하르덴브라흐"},
+{name:"안드레이",rarity:3,group:"66구역"},
+{name:"드미트리",rarity:3,group:"66구역"},
+{name:"공주",rarity:3,group:"66구역"},
+{name:"안나",rarity:2,group:"66구역"},
+{name:"모리어티",rarity:3,group:"터미널15"},
+{name:"미셸",rarity:3,group:"터미널15"},
+{name:"카산드라",rarity:3,group:"터미널15"},
+{name:"제럴드",rarity:1,group:"터미널15"},
+{name:"루핀",rarity:3,group:"볼칸 중공업"},
+{name:"요루",rarity:3,group:"볼칸 중공업"},
+{name:"헤더스",rarity:1,group:"볼칸 중공업"},
+{name:"올리버",rarity:3,group:"찰스 브리게이드"},
+{name:"오지에",rarity:3,group:"찰스 브리게이드"},
+{name:"람다",rarity:3,group:"찰스 브리게이드"},
+{name:"카롤",rarity:3,group:"찰스 브리게이드"},
+{name:"모지",rarity:3,group:"찰스 브리게이드"},
+{name:"란",rarity:3,group:"찰스 브리게이드"},
+{name:"나모",rarity:2,group:"찰스 브리게이드"},
+{name:"엘리아OS",rarity:3,group:"힌튼 아카이브"},
+{name:"렌카",rarity:3,group:"미나모토"},
+{name:"아토스",rarity:3,group:"미나모토"},
+{name:"간류",rarity:3,group:"미나모토"},
+{name:"레아",rarity:3,group:"미나모토"},
+{name:"로건",rarity:2,group:"미나모토"},
+{name:"츠카하라",rarity:1,group:"미나모토"},
+{name:"랜슬롯",rarity:3,group:"아발론PMC"},
+{name:"케이",rarity:3,group:"아발론PMC"},
+{name:"트리스탄",rarity:3,group:"아발론PMC"},
+{name:"이졸데",rarity:3,group:"아발론PMC"},
+{name:"노미",rarity:3,group:"아발론PMC"},
+{name:"가레스",rarity:2,group:"아발론PMC"},
+{name:"이졸드",rarity:2,group:"아발론PMC"},
+{name:"미래",rarity:3,group:"서천그룹"},
+{name:"리",rarity:3,group:"서천그룹"},
+{name:"이안",rarity:2,group:"서천그룹"},
+{name:"리나",rarity:1,group:"서천그룹"},
+{name:"스테파네트",rarity:3,group:"솔레어"},
+{name:"뮌하우젠",rarity:2,group:"솔레어"}
+];
+
+const BANNERS=[
+{
+preview:[
+{name:"발렌티나",video:"bg1.mp4",sd:"sd1.PNG"},
+{name:"할",video:"bg2.mp4",sd:"sd2.PNG"}
+]
+},
+{
+preview:[
+{name:"도로시",video:"bg3.mp4",sd:"sd3.PNG"},
+{name:"올가",video:"bg4.mp4",sd:"sd4.PNG"}
+]
+},
+{
+preview:[
+{name:"통상",video:"bg5.mp4",sd:""}
+]
+}
+];
+
+let currentBanner=0;
+let currentIndex=0;
+
+const video=document.getElementById("bgVideo");
+const sdImage=document.getElementById("sdImage");
+const sdWrapper=document.getElementById("sdWrapper");
+const leftArrow=document.getElementById("leftArrow");
+const rightArrow=document.getElementById("rightArrow");
+
+function updatePreview(){
+let char=BANNERS[currentBanner].preview[currentIndex];
+video.src=char.video;
+video.play();
+
+if(currentBanner===2){
+sdWrapper.style.display="none";
+leftArrow.style.display="none";
+rightArrow.style.display="none";
+}else{
+sdWrapper.style.display="flex";
+leftArrow.style.display="block";
+rightArrow.style.display="block";
+sdImage.src=char.sd;
+}
+}
+
+leftArrow.onclick=()=>{
+currentIndex--;
+if(currentIndex<0)currentIndex=BANNERS[currentBanner].preview.length-1;
+updatePreview();
+};
+
+rightArrow.onclick=()=>{
+currentIndex++;
+if(currentIndex>=BANNERS[currentBanner].preview.length)currentIndex=0;
+updatePreview();
+};
+
+document.querySelectorAll(".pickup").forEach((el,i)=>{
+el.onclick=()=>{
+currentBanner=i;
+currentIndex=0;
+document.querySelectorAll(".pickup").forEach(p=>p.classList.remove("active"));
+el.classList.add("active");
+updatePreview();
+};
+});
+document.querySelectorAll(".pickup")[0].classList.add("active");
+
+document.querySelectorAll(".gacha").forEach(btn=>{
+btn.onclick=()=>{
+alert("가챠 실행 (연출 연결 단계 전)");
+};
+});
+
 function checkOrientation(){
 if(window.innerHeight>window.innerWidth){
 document.getElementById("rotateBlock").style.display="flex";
@@ -222,7 +358,10 @@ document.getElementById("rotateBlock").style.display="none";
 }
 }
 window.addEventListener("resize",checkOrientation);
-window.addEventListener("load",checkOrientation);
+window.addEventListener("load",()=>{
+updatePreview();
+checkOrientation();
+});
 </script>
 
 </body>
