@@ -36,7 +36,7 @@ object-fit:cover;
 z-index:0;
 }
 
-/* 왼쪽 어둡게 */
+/* 왼쪽 블랙 베일 */
 .leftShade{
 position:absolute;
 top:0;
@@ -169,7 +169,13 @@ z-index:9999;
 <div class="canvas">
 
 <!-- 🎥 배경 영상 -->
-<video class="bgVideo" autoplay muted loop playsinline>
+<video id="bgVideo"
+class="bgVideo"
+autoplay
+muted
+loop
+playsinline
+preload="auto">
 <source src="bg.mp4" type="video/mp4">
 </video>
 
