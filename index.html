@@ -2,245 +2,217 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>집중 헤드헌팅</title>
-
+<title>가챠 엔진 테스트</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{
-background:#0f0f0f;
-overflow:hidden;
-font-family:Pretendard,sans-serif;
-color:white;
-}
-
-/* 화면 중앙 정렬 */
-.screen{
-width:100vw;
-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-/* 16:9 고정 */
-.canvas{
-position:relative;
-width:100%;
-max-width:1600px;
-aspect-ratio:16/9;
-overflow:hidden;
-}
-
-/* 🎥 배경 영상 */
-.bgVideo{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-object-fit:cover;
-z-index:0;
-}
-
-/* 왼쪽 블랙 베일 */
-.leftShade{
-position:absolute;
-top:0;
-left:0;
-height:100%;
-width:38%;
-pointer-events:none;
-z-index:1;
-background:linear-gradient(
-to right,
-rgba(0,0,0,0.85) 0%,
-rgba(0,0,0,0.6) 40%,
-rgba(0,0,0,0.3) 65%,
-rgba(0,0,0,0) 100%
-);
-}
-
-/* UI 레이어 */
-.uiLayer{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-z-index:2;
-}
-
-/* 픽업 */
-.pickup{
-position:absolute;
-left:3%;
-width:22%;
-transform:skewX(-12deg);
-}
-.pick1{ top:12%; }
-.pick2{ top:28%; }
-.pick3{ top:42%; }
-
-.pickup div{
-background:#111;
-border:2px solid #333;
-padding:6% 8%;
-font-size:1.3vw;
-transform:skewX(12deg);
-}
-
-/* 가챠 버튼 */
-.gacha{
-position:absolute;
-right:5%;
-width:22%;
-transform:skewX(-12deg);
-}
-.gacha7{ top:36%; }
-.gacha8{ top:50%; }
-
-.gacha div{
-background:#111;
-border:2px solid #333;
-padding:8% 6%;
-text-align:center;
-font-size:1.5vw;
-transform:skewX(12deg);
-}
-
-/* 큰 마름모 */
-.bigDiamond{
-position:absolute;
-left:17%;
-bottom:22%;
-width:10%;
-aspect-ratio:1/1;
-background:#111;
-transform:rotate(45deg);
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.bigDiamond span{
-transform:rotate(-45deg);
-font-size:1vw;
-}
-
-/* 하단 네비 */
-.bottomNav{
-position:absolute;
-right:6%;
-bottom:6%;
-display:flex;
-gap:2.5vw;
-}
-
-.bottomNav div{
-width:4vw;
-aspect-ratio:1/1;
-background:#111;
-transform:rotate(45deg);
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.bottomNav span{
-transform:rotate(-45deg);
-font-size:1.3vw;
-}
-
-/* 세로 차단 */
-.rotateWarning{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#0f0f0f;
-display:none;
-align-items:center;
-justify-content:center;
-text-align:center;
-font-size:22px;
-z-index:9999;
-}
+body{background:#111;color:white;font-family:sans-serif;text-align:center;padding:20px;}
+button{padding:10px 20px;margin:5px;}
+.hidden{display:none;}
+.icon{display:inline-block;width:40px;height:40px;border-radius:50%;margin:5px;line-height:40px;}
+.r1{background:red;}
+.r2{background:violet;}
+.r3{background:silver;}
+.newsCard{border:1px solid #444;padding:20px;margin-top:20px;}
 </style>
 </head>
-
 <body>
 
-<div class="screen">
-<div class="canvas">
+<h2>가챠 배너 선택</h2>
+<div id="bannerArea"></div>
 
-<!-- 🎥 배경 영상 -->
-<video id="bgVideo"
-class="bgVideo"
-muted
-loop
-playsinline
-preload="auto">
-<source src="bg.mp4" type="video/mp4">
-</video>
+<hr>
 
-<div class="leftShade"></div>
-
-<div class="uiLayer">
-
-<div class="pickup pick1"><div>픽업 1</div></div>
-<div class="pickup pick2"><div>픽업 2</div></div>
-<div class="pickup pick3"><div>통상</div></div>
-
-<div class="gacha gacha7"><div>1회 ◇130</div></div>
-<div class="gacha gacha8"><div>10회 ◇1300</div></div>
-
-<div class="bigDiamond"><span>소형 캐릭터</span></div>
-
-<div class="bottomNav">
-<div><span>👤</span></div>
-<div><span>📜</span></div>
-<div><span>⚙</span></div>
-<div><span>≡</span></div>
+<div id="gachaArea">
+<button onclick="startGacha(1)">1회 뽑기</button>
+<button onclick="startGacha(10)">10회 뽑기</button>
 </div>
 
-</div>
-</div>
+<hr>
+
+<div id="chargeArea" class="hidden">
+<h3>차징 중...</h3>
+<button onclick="releaseCharge()">손 놓기</button>
 </div>
 
-<div id="rotateBlock" class="rotateWarning">
-📱<br><br>가로 모드에서 이용해주세요.
+<div id="iconArea" class="hidden">
+<h3>아이콘 공개</h3>
+<div id="iconContainer"></div>
+<button onclick="nextPhase()">다음</button>
+</div>
+
+<div id="newsArea" class="hidden">
+<div id="newsContainer"></div>
+<button onclick="nextNews()">다음 캐릭터</button>
+</div>
+
+<div id="finalArea" class="hidden">
+<h3>최종 결과</h3>
+<div id="finalContainer"></div>
+<button onclick="resetToBanner()">배너로 복귀</button>
 </div>
 
 <script>
-function checkOrientation(){
-if(window.innerHeight > window.innerWidth){
-document.getElementById("rotateBlock").style.display="flex";
+
+/* ===== DB ===== */
+var DB=[
+{name:"발렌티나",rarity:3},
+{name:"도로시",rarity:3},
+{name:"할",rarity:2},
+{name:"올가",rarity:2},
+{name:"재클린",rarity:1},
+{name:"리나",rarity:1}
+];
+
+/* ===== 배너 ===== */
+var BANNERS=[
+{name:"픽업 1",pickups:["발렌티나","할"]},
+{name:"픽업 2",pickups:["도로시","올가"]},
+{name:"통상",pickups:[]}
+];
+
+var GAME={
+state:"banner",
+currentBanner:0,
+results:[],
+highest:1,
+isRolling:false,
+newsIndex:0
+};
+
+/* 배너 렌더 */
+function renderBanners(){
+var html="";
+for(var i=0;i<BANNERS.length;i++){
+html+='<button onclick="selectBanner('+i+')">'+BANNERS[i].name+'</button>';
+}
+document.getElementById("bannerArea").innerHTML=html;
+}
+renderBanners();
+
+function selectBanner(i){
+GAME.currentBanner=i;
+alert("선택됨: "+BANNERS[i].name);
+}
+
+/* 확률 */
+function rollRarity(){
+var r=Math.random();
+if(r<0.03)return 3;
+if(r<0.23)return 2;
+return 1;
+}
+
+function rollGacha(times){
+var results=[];
+for(var i=0;i<times;i++){
+var rarity=rollRarity();
+var pool=[];
+for(var j=0;j<DB.length;j++){
+if(DB[j].rarity===rarity)pool.push(DB[j]);
+}
+
+if(GAME.currentBanner!==2){
+var pickups=BANNERS[GAME.currentBanner].pickups;
+var weighted=[];
+for(var k=0;k<pool.length;k++){
+var c=pool[k];
+if(pickups.indexOf(c.name)!==-1){
+weighted.push(c,c,c);
+}
+weighted.push(c);
+}
+pool=weighted;
+}
+
+results.push(pool[Math.floor(Math.random()*pool.length)]);
+}
+return results;
+}
+
+/* 가챠 시작 */
+function startGacha(times){
+if(GAME.isRolling)return;
+
+GAME.isRolling=true;
+GAME.results=rollGacha(times);
+
+/* 최고 등급 계산 (spread 제거) */
+var max=1;
+for(var i=0;i<GAME.results.length;i++){
+if(GAME.results[i].rarity>max){
+max=GAME.results[i].rarity;
+}
+}
+GAME.highest=max;
+
+document.getElementById("gachaArea").classList.add("hidden");
+document.getElementById("chargeArea").classList.remove("hidden");
+GAME.state="charging";
+}
+
+function releaseCharge(){
+if(GAME.state!=="charging")return;
+
+document.getElementById("chargeArea").classList.add("hidden");
+showIcons();
+}
+
+function showIcons(){
+GAME.state="icons";
+var container=document.getElementById("iconContainer");
+container.innerHTML="";
+for(var i=0;i<GAME.results.length;i++){
+var r=GAME.results[i];
+var div=document.createElement("div");
+div.className="icon r"+r.rarity;
+div.innerHTML=r.rarity;
+container.appendChild(div);
+}
+document.getElementById("iconArea").classList.remove("hidden");
+}
+
+function nextPhase(){
+document.getElementById("iconArea").classList.add("hidden");
+GAME.newsIndex=0;
+showNews();
+}
+
+function showNews(){
+GAME.state="news";
+var char=GAME.results[GAME.newsIndex];
+document.getElementById("newsContainer").innerHTML=
+'<div class="newsCard"><h2>'+char.name+
+'</h2><p>등급: '+char.rarity+'성</p></div>';
+document.getElementById("newsArea").classList.remove("hidden");
+}
+
+function nextNews(){
+GAME.newsIndex++;
+if(GAME.newsIndex>=GAME.results.length){
+document.getElementById("newsArea").classList.add("hidden");
+showFinal();
 }else{
-document.getElementById("rotateBlock").style.display="none";
+showNews();
 }
 }
 
-window.addEventListener("resize",checkOrientation);
-
-window.addEventListener("load",function(){
-checkOrientation();
-
-const video = document.getElementById("bgVideo");
-
-/* 첫 터치 재생 방식 */
-function startVideo(){
-if(video){
-video.play().catch(()=>{});
+function showFinal(){
+GAME.state="final";
+var html="";
+for(var i=0;i<GAME.results.length;i++){
+var r=GAME.results[i];
+html+='<div>'+r.name+' ('+r.rarity+'성)</div>';
 }
-document.removeEventListener("touchstart", startVideo);
-document.removeEventListener("click", startVideo);
+document.getElementById("finalContainer").innerHTML=html;
+document.getElementById("finalArea").classList.remove("hidden");
 }
 
-document.addEventListener("touchstart", startVideo);
-document.addEventListener("click", startVideo);
-});
+function resetToBanner(){
+GAME.state="banner";
+GAME.isRolling=false;
+document.getElementById("finalArea").classList.add("hidden");
+document.getElementById("gachaArea").classList.remove("hidden");
+}
+
 </script>
 
 </body>
