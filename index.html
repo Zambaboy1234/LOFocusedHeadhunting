@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>집중 헤드헌팅</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+background:#0f0f0f;
+color:#ddd;
+font-family:SUIT, Pretendard, sans-serif;
+overflow:hidden;
+}
+
+/* 전체 레이아웃 */
+.main{
+display:grid;
+grid-template-columns:220px 1fr 260px;
+grid-template-rows:1fr 120px;
+height:100vh;
+}
+
+/* 좌측 배너 선택 */
+.leftPanel{
+padding:30px 20px;
+display:flex;
+flex-direction:column;
+gap:20px;
+}
+
+.bannerBtn{
+background:#111;
+border:2px solid #333;
+padding:18px;
+text-align:left;
+font-size:20px;
+cursor:pointer;
+}
+
+.bannerBtn.active{
+border:2px solid #fff;
+}
+
+/* 중앙 배너 영역 */
+.centerPanel{
+position:relative;
+background:#151515;
+overflow:hidden;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.mainArt{
+font-size:48px;
+opacity:0.2;
+}
+
+/* 좌하단 작은 캐릭터 영역 */
+.subInfo{
+position:absolute;
+bottom:30px;
+left:40px;
+display:flex;
+align-items:center;
+gap:20px;
+}
+
+.smallDiamond{
+width:120px;
+height:120px;
+background:#111;
+transform:rotate(45deg);
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.smallDiamond span{
+transform:rotate(-45deg);
+font-size:14px;
+}
+
+.glowBar{
+background:#111;
+padding:8px 14px;
+border:1px solid #333;
+font-size:14px;
+}
+
+/* 우측 가챠 버튼 */
+.rightPanel{
+padding:40px 20px;
+display:flex;
+flex-direction:column;
+gap:30px;
+justify-content:center;
+}
+
+.gachaBtn{
+background:#111;
+border:2px solid #333;
+padding:20px;
+font-size:22px;
+cursor:pointer;
+transform:skewX(-10deg);
+text-align:center;
+}
+
+.gachaBtn span{
+display:block;
+transform:skewX(10deg);
+}
+
+/* 하단 네비 */
+.bottomNav{
+grid-column:1 / span 3;
+background:#0f0f0f;
+display:flex;
+justify-content:center;
+align-items:center;
+gap:60px;
+border-top:1px solid #222;
+}
+
+.navDiamond{
+width:70px;
+height:70px;
+background:#111;
+transform:rotate(45deg);
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+}
+
+.navDiamond span{
+transform:rotate(-45deg);
+font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="main">
+
+<!-- 좌측 -->
+<div class="leftPanel">
+<div class="bannerBtn active">픽업 1</div>
+<div class="bannerBtn">픽업 2</div>
+<div class="bannerBtn">통상</div>
+</div>
+
+<!-- 중앙 -->
+<div class="centerPanel">
+<div class="mainArt">MAIN CHARACTER ART</div>
+
+<div class="subInfo">
+<div class="smallDiamond">
+<span>소형 캐릭터</span>
+</div>
+<div class="glowBar">
+잔광 보정 200 / 200
+</div>
+</div>
+</div>
+
+<!-- 우측 -->
+<div class="rightPanel">
+<div class="gachaBtn">
+<span>1회 ◇130</span>
+</div>
+<div class="gachaBtn">
+<span>10회 ◇1300</span>
+</div>
+</div>
+
+<!-- 하단 네비 -->
+<div class="bottomNav">
+<div class="navDiamond"><span>👤</span></div>
+<div class="navDiamond"><span>📜</span></div>
+<div class="navDiamond"><span>⚙</span></div>
+<div class="navDiamond"><span>≡</span></div>
+</div>
+
+</div>
+
+</body>
+</html>
