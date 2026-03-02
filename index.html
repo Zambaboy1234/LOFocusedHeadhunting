@@ -8,59 +8,64 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#0f0f0f;overflow:hidden;font-family:Pretendard,sans-serif;color:white;}
-
 .screen{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;}
 .canvas{position:relative;width:100%;max-width:1600px;aspect-ratio:16/9;overflow:hidden;}
-
 .bgVideo{position:absolute;width:100%;height:100%;object-fit:cover;z-index:0;}
-
 .leftShade{
 position:absolute;top:0;left:0;height:100%;width:38%;
 background:linear-gradient(to right,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.6) 40%,rgba(0,0,0,0.2) 70%,rgba(0,0,0,0) 100%);
 z-index:1;
 }
-
 .uiLayer{position:absolute;width:100%;height:100%;z-index:2;}
-
-/* 배너 */
 .pickup{position:absolute;left:3%;width:22%;transform:skewX(-12deg);cursor:pointer;transition:0.25s;}
 .pick1{top:12%;}.pick2{top:28%;}.pick3{top:42%;}
 .pickup div{background:#111;border:2px solid #333;padding:6% 8%;font-size:1.3vw;transform:skewX(12deg);}
 .pickup.active{transform:skewX(-12deg) translateX(0.8vw);}
 .pickup.active div{border-color:#aaa;box-shadow:0 0 1vw rgba(255,255,255,0.4);}
-
-/* 가챠 버튼 */
 .gacha{position:absolute;right:5%;width:22%;transform:skewX(-12deg);cursor:pointer;}
 .gacha7{top:36%;}.gacha8{top:50%;}
 .gacha div{background:#111;border:2px solid #333;padding:8% 6%;font-size:1.5vw;text-align:center;transform:skewX(12deg);}
-
-/* SD */
-.sdWrapper{position:absolute;left:17%;bottom:22%;width:10%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;}
-.diamond{position:absolute;width:100%;height:100%;background:#111;transform:rotate(45deg);}
-.sdChar{position:absolute;bottom:-10%;width:170%;height:auto;pointer-events:none;}
-
-.arrow{position:absolute;top:50%;font-size:2vw;cursor:pointer;user-select:none;}
-#leftArrow{left:42%;}#rightArrow{right:42%;}
-
-/* 연출 */
 .overlay{
 position:absolute;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,0.9);z-index:10;
-display:none;text-align:center;padding-top:15%;
+background:#000;z-index:10;display:none;
 }
-
-.overlay h2{font-size:2vw;margin-bottom:2vw;}
-.overlay button{
-margin:0.5vw;padding:0.8vw 1.6vw;
-background:#222;border:1px solid #555;color:white;cursor:pointer;font-size:1vw;
-}
-
-.resultLine{font-size:1.2vw;margin:0.4vw;}
-
 .rotateWarning{
 position:fixed;top:0;left:0;width:100%;height:100%;
 background:#0f0f0f;display:none;align-items:center;justify-content:center;
 text-align:center;font-size:3vw;z-index:9999;
+}
+
+/* ===== 차징 스테이지 ===== */
+
+.chargeStage{position:relative;width:100%;height:100%;overflow:hidden;}
+.lantern{
+position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+width:10%;aspect-ratio:1/1;border:3px solid #444;border-radius:50%;
+display:flex;align-items:center;justify-content:center;
+}
+.flame{
+width:40%;height:60%;border-radius:50%;
+background:red;opacity:0;transition:0.3s;
+}
+.monitor{
+position:absolute;width:18%;aspect-ratio:16/9;background:#050505;border:2px solid #222;overflow:hidden;
+}
+.wave{
+position:absolute;width:200%;height:3px;top:50%;
+animation:waveMove 1s linear infinite;
+}
+@keyframes waveMove{from{left:-100%;}to{left:100%;}}
+.r1{background:red;}
+.r2{background:#b000ff;}
+.r3{background:silver;}
+
+.shake{animation:shake 0.08s infinite;}
+@keyframes shake{
+0%{transform:translate(0,0);}
+25%{transform:translate(2px,-2px);}
+50%{transform:translate(-2px,2px);}
+75%{transform:translate(2px,2px);}
+100%{transform:translate(0,0);}
 }
 </style>
 </head>
@@ -74,22 +79,12 @@ text-align:center;font-size:3vw;z-index:9999;
 <div class="leftShade"></div>
 
 <div class="uiLayer">
-
-<div class="pickup pick1"><div>픽업 1</div></div>
+<div class="pickup pick1 active"><div>픽업 1</div></div>
 <div class="pickup pick2"><div>픽업 2</div></div>
 <div class="pickup pick3"><div>통상</div></div>
 
 <div class="gacha gacha7"><div>1회 ◇130</div></div>
 <div class="gacha gacha8"><div>10회 ◇1300</div></div>
-
-<div class="sdWrapper" id="sdWrapper">
-<div class="diamond"></div>
-<img id="sdImage" class="sdChar">
-</div>
-
-<div id="leftArrow" class="arrow">◀</div>
-<div id="rightArrow" class="arrow">▶</div>
-
 </div>
 
 <div id="chargeLayer" class="overlay"></div>
@@ -106,7 +101,7 @@ text-align:center;font-size:3vw;z-index:9999;
 
 <script>
 
-/* ================= DB ================= */
+/* ===== DB ===== */
 
 let DB=[
 {name:"발렌티나",rarity:3,group:"등불사무소"},
@@ -121,75 +116,9 @@ let DB=[
 {name:"재클린",rarity:1,group:"등불사무소"},
 ];
 
-/* 배너 */
-
-const BANNERS = [
-{
-preview:[
-{name:"발렌티나",video:"bg1.mp4",sd:"sd1.PNG"},
-{name:"할",video:"bg2.mp4",sd:"sd2.PNG"}
-],
-pickup:["발렌티나"]
-},
-{
-preview:[
-{name:"도로시",video:"bg3.mp4",sd:"sd3.PNG"},
-{name:"올가",video:"bg4.mp4",sd:"sd4.PNG"}
-],
-pickup:["도로시"]
-},
-{
-preview:[
-{name:"통상",video:"bg5.mp4",sd:""}
-],
-pickup:[]
-}
-];
-
-/* 상태 */
-
-let currentBanner=0;
-let currentIndex=0;
 let GAME={isRolling:false,results:[],newsIndex:0};
 
-/* 프리뷰 */
-
-const video=document.getElementById("bgVideo");
-const sdImage=document.getElementById("sdImage");
-const sdWrapper=document.getElementById("sdWrapper");
-const leftArrow=document.getElementById("leftArrow");
-const rightArrow=document.getElementById("rightArrow");
-
-function updatePreview(){
-let char=BANNERS[currentBanner].preview[currentIndex];
-video.src=char.video; video.play();
-
-if(currentBanner===2){
-sdWrapper.style.display="none";
-leftArrow.style.display="none";
-rightArrow.style.display="none";
-}else{
-sdWrapper.style.display="flex";
-leftArrow.style.display="block";
-rightArrow.style.display="block";
-sdImage.src=char.sd;
-}
-}
-
-leftArrow.onclick=()=>{currentIndex=(currentIndex-1+ BANNERS[currentBanner].preview.length)%BANNERS[currentBanner].preview.length;updatePreview();}
-rightArrow.onclick=()=>{currentIndex=(currentIndex+1)%BANNERS[currentBanner].preview.length;updatePreview();}
-
-document.querySelectorAll(".pickup").forEach((el,i)=>{
-el.onclick=()=>{
-currentBanner=i;currentIndex=0;
-document.querySelectorAll(".pickup").forEach(p=>p.classList.remove("active"));
-el.classList.add("active");
-updatePreview();
-};
-});
-document.querySelectorAll(".pickup")[0].classList.add("active");
-
-/* ================= 확률 ================= */
+/* ===== 확률 ===== */
 
 function rollRarity(){
 let r=Math.random();
@@ -200,78 +129,35 @@ return 1;
 
 function rollGacha(times){
 let results=[];
-
 for(let i=0;i<times;i++){
-
 let rarity=rollRarity();
 let pool=DB.filter(c=>c.rarity===rarity);
-
-if(currentBanner!==2){
-
-let pickupList=BANNERS[currentBanner].pickup;
-
-if(pickupList.length>0){
-
-/* ===== 3성 픽업 50% ===== */
-if(rarity===3){
-if(Math.random()<0.5){
-let pickupPool=pool.filter(c=>pickupList.includes(c.name));
-if(pickupPool.length>0){
-results.push(pickupPool[Math.floor(Math.random()*pickupPool.length)]);
-continue;
-}
-}
-}
-
-/* ===== 2성 픽업 30% ===== */
-if(rarity===2){
-if(Math.random()<0.3){
-let pickupPool=pool.filter(c=>pickupList.includes(c.name));
-if(pickupPool.length>0){
-results.push(pickupPool[Math.floor(Math.random()*pickupPool.length)]);
-continue;
-}
-}
-}
-
-}
-
-}
-
-/* 일반 풀 */
 results.push(pool[Math.floor(Math.random()*pool.length)]);
 }
-
-/* ===== 10연 보정 ===== */
 if(times===10 && !results.some(c=>c.rarity>=2)){
-
-let rarity=2;
 let pool=DB.filter(c=>c.rarity===2);
-
-if(currentBanner!==2){
-let pickupList=BANNERS[currentBanner].pickup;
-
-/* 2성 보정도 동일 30% 룰 적용 */
-if(pickupList.length>0 && Math.random()<0.3){
-let pickupPool=pool.filter(c=>pickupList.includes(c.name));
-if(pickupPool.length>0){
-results[9]=pickupPool[Math.floor(Math.random()*pickupPool.length)];
-}else{
 results[9]=pool[Math.floor(Math.random()*pool.length)];
 }
-}else{
-results[9]=pool[Math.floor(Math.random()*pool.length)];
-}
-}else{
-results[9]=pool[Math.floor(Math.random()*pool.length)];
-}
-
-}
-
 return results;
 }
 
-/* ================= 연출 ================= */
+/* ===== 사운드 ===== */
+
+let audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+let osc;
+
+function startTone(freq){
+osc=audioCtx.createOscillator();
+osc.type="sine";
+osc.frequency.value=freq;
+osc.connect(audioCtx.destination);
+osc.start();
+}
+function stopTone(){
+if(osc){osc.stop();osc.disconnect();}
+}
+
+/* ===== 가챠 시작 ===== */
 
 document.querySelector(".gacha7").onclick=()=>startGacha(1);
 document.querySelector(".gacha8").onclick=()=>startGacha(10);
@@ -283,28 +169,98 @@ GAME.results=rollGacha(times);
 showCharge();
 }
 
+/* ===== 차징 ===== */
+
 function showCharge(){
 let layer=document.getElementById("chargeLayer");
 layer.style.display="block";
-layer.innerHTML=`<h2>차징...</h2>
-<button onclick="nextToIcons()">손 놓기</button>
-<button onclick="skipGacha()">스킵</button>`;
+
+let highest=Math.max(...GAME.results.map(r=>r.rarity));
+
+layer.innerHTML=`
+<div class="chargeStage" id="chargeStage">
+<div class="monitor" style="top:15%;left:10%"><div class="wave"></div></div>
+<div class="monitor" style="top:20%;right:10%"><div class="wave"></div></div>
+<div class="monitor" style="bottom:20%;left:15%"><div class="wave"></div></div>
+<div class="monitor" style="bottom:15%;right:15%"><div class="wave"></div></div>
+<div class="lantern"><div class="flame" id="flame"></div></div>
+</div>
+`;
+
+let stage=document.getElementById("chargeStage");
+let flame=document.getElementById("flame");
+let waves=document.querySelectorAll(".wave");
+
+let level=1;
+let holding=false;
+
+stage.onmousedown=()=>{
+holding=true;
+startTone(120);
+stage.classList.add("shake");
+chargeLoop();
+};
+stage.onmouseup=release;
+stage.onmouseleave=release;
+
+function chargeLoop(){
+if(!holding)return;
+
+if(level<=highest){
+applyLevel(level);
+level++;
+setTimeout(chargeLoop,600);
+}
 }
 
-function nextToIcons(){
-document.getElementById("chargeLayer").style.display="none";
-showIcons();
+function applyLevel(lv){
+flame.style.opacity=1;
+waves.forEach(w=>{
+w.className="wave r"+lv;
+w.style.opacity=1;
+});
+if(lv===2)startTone(240);
+if(lv===3)startTone(500);
 }
+
+function release(){
+if(!holding)return;
+holding=false;
+stage.classList.remove("shake");
+stopTone();
+impact(highest);
+}
+}
+
+function impact(highest){
+let layer=document.getElementById("chargeLayer");
+layer.innerHTML=`
+<div style="width:100%;height:100%;
+background:${highest===1?"red":highest===2?"#b000ff":"silver"};
+display:flex;align-items:center;justify-content:center;">
+</div>
+`;
+setTimeout(()=>{
+layer.style.display="none";
+showIcons();
+},250);
+}
+
+/* ===== 아이콘 공개 ===== */
 
 function showIcons(){
 let layer=document.getElementById("iconLayer");
 layer.style.display="block";
-let html="<h2>등급 공개</h2>";
-GAME.results.forEach(r=>{html+=`<div class="resultLine">${r.rarity}성</div>`});
-html+=`<button onclick="nextToNews()">다음</button>
-<button onclick="skipGacha()">스킵</button>`;
+let html="<div style='padding:5%'>";
+GAME.results.forEach(r=>{
+html+=`<div style="font-size:2vw;color:${r.rarity===1?"red":r.rarity===2?"#b000ff":"silver"}">●</div>`;
+});
+html+=`<button onclick="nextToNews()">다음</button>`;
+html+="</div>";
 layer.innerHTML=html;
 }
+
+/* ===== 뉴스 ===== */
 
 function nextToNews(){
 document.getElementById("iconLayer").style.display="none";
@@ -316,10 +272,12 @@ function showNews(){
 let layer=document.getElementById("newsLayer");
 layer.style.display="block";
 let char=GAME.results[GAME.newsIndex];
-layer.innerHTML=`<h2>${char.name}</h2>
-<p>${char.rarity}성</p>
+layer.innerHTML=`
+<div style="padding:10%">
+<h2>${char.name}</h2>
+<p>${char.group}</p>
 <button onclick="nextNews()">다음</button>
-<button onclick="skipGacha()">스킵</button>`;
+</div>`;
 }
 
 function nextNews(){
@@ -332,29 +290,25 @@ showNews();
 }
 }
 
+/* ===== 최종 ===== */
+
 function showFinal(){
 let layer=document.getElementById("finalLayer");
 layer.style.display="block";
-let html="<h2>최종 결과</h2>";
-GAME.results.forEach(r=>{html+=`<div class="resultLine">${r.name} (${r.rarity}성)</div>`});
-html+=`<button onclick="resetToBanner()">확인</button>`;
+let html="<div style='padding:5%'><h2>최종 결과</h2>";
+GAME.results.forEach(r=>{
+html+=`<div>${r.name} (${r.rarity}성)</div>`;
+});
+html+=`<button onclick="reset()">확인</button></div>`;
 layer.innerHTML=html;
 }
 
-function skipGacha(){
-document.getElementById("chargeLayer").style.display="none";
-document.getElementById("iconLayer").style.display="none";
-document.getElementById("newsLayer").style.display="none";
-showFinal();
-}
-
-function resetToBanner(){
+function reset(){
 document.getElementById("finalLayer").style.display="none";
 GAME.isRolling=false;
 }
 
 /* 가로 체크 */
-
 function checkOrientation(){
 if(window.innerHeight>window.innerWidth){
 document.getElementById("rotateBlock").style.display="flex";
@@ -363,7 +317,7 @@ document.getElementById("rotateBlock").style.display="none";
 }
 }
 window.addEventListener("resize",checkOrientation);
-window.addEventListener("load",()=>{updatePreview();checkOrientation();});
+window.addEventListener("load",checkOrientation);
 </script>
 
 </body>
